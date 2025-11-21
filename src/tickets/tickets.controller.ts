@@ -9,7 +9,6 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
-  ParseIntPipe
 } from '@nestjs/common';
 import { TicketsService } from './tickets.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -27,8 +26,9 @@ export class TicketsController {
   async createTicket(
     @Body() createTicketDto: {
       motivo: string;
-      claveProfesor: number;
-      claveDepartamento: number;
+      claveProfesor: string;
+      claveDepartamento: string;
+      claveDocumento: string;
     }
   ) {
     this.logger.log('Creando nuevo ticket');
@@ -48,31 +48,10 @@ export class TicketsController {
     }
   }
 
-  // Obtener ticket por claveTicketGeneral
-  @Get(':claveTicketGeneral')
-  async getTicket(
-    @Param('claveTicketGeneral', ParseIntPipe) claveTicketGeneral: number
-  ) {
-    this.logger.log(`Obteniendo ticket: ${claveTicketGeneral}`);
-    
-    try {
-      const result = await this.ticketsService.getTicket(claveTicketGeneral);
-      
-      return {
-        success: true,
-        statusCode: HttpStatus.OK,
-        data: result,
-      };
-    } catch (error) {
-      this.logger.error(`Error al obtener ticket: ${error.message}`, error.stack);
-      throw error;
-    }
-  }
-
-  // Actualizar ticket (agregar resolución)
+    // Actualizar ticket (agregar resolución)
   @Patch(':claveTicket')
   async updateTicket(
-    @Param('claveTicket', ParseIntPipe) claveTicket: number,
+    @Param('claveTicket') claveTicket: string,
     @Body('resolucion') resolucion: string
   ) {
     this.logger.log(`Actualizando ticket: ${claveTicket}`);
@@ -92,13 +71,34 @@ export class TicketsController {
     }
   }
 
+  // Obtener ticket por claveTicketGeneral
+  @Get(':claveTicketGeneral')
+  async getTicket(
+    @Param('claveTicketGeneral') claveTicketGeneral: string
+  ) {
+    this.logger.log(`Obteniendo ticket: ${claveTicketGeneral}`);
+    
+    try {
+      const result = await this.ticketsService.getTicket(claveTicketGeneral);
+      
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        data: result,
+      };
+    } catch (error) {
+      this.logger.error(`Error al obtener ticket: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
   // Crear ticket general
   @Post('general')
   @HttpCode(HttpStatus.CREATED)
   async createGeneralTicket(
     @Body() createGeneralTicketDto: {
       motivo: string;
-      claveProfesor: number;
+      claveProfesor: string;
     }
   ) {
     this.logger.log('Creando nuevo ticket general');
@@ -121,7 +121,7 @@ export class TicketsController {
   // Obtener resoluciones de un ticket general
   @Get('general/:claveTicketGeneral/resolutions')
   async getGeneralTicketResolutions(
-    @Param('claveTicketGeneral', ParseIntPipe) claveTicketGeneral: number
+    @Param('claveTicketGeneral') claveTicketGeneral: string
   ) {
     this.logger.log(`Obteniendo resoluciones del ticket general: ${claveTicketGeneral}`);
     
@@ -142,10 +142,10 @@ export class TicketsController {
   // Actualizar ticket general
   @Patch('general/:claveTicketGeneral')
   async updateGeneralTicket(
-    @Param('claveTicketGeneral', ParseIntPipe) claveTicketGeneral: number,
+    @Param('claveTicketGeneral') claveTicketGeneral: string,
     @Body() updateDto: {
       resolucion: string;
-      claveDepartamento: number;
+      claveDepartamento: string;
     }
   ) {
     this.logger.log(`Actualizando ticket general: ${claveTicketGeneral}`);

@@ -22,7 +22,7 @@ export class UsersService {
     return result.recordset[0] || null;
   }
 
-  async findByClaveUsuario(claveUsuario: number) {
+  async findByClaveUsuario(claveUsuario: string) {
     const pool = this.mssql.getPool();
     const result = await pool
       .request()
@@ -32,7 +32,7 @@ export class UsersService {
     return result.recordset[0] || null;
   }
 
-  async updateUser(claveUsuario: number, dto: UpdateUserDto) {
+  async updateUser(claveUsuario: string, dto: UpdateUserDto) {
     const pool = this.mssql.getPool();
     const keys = Object.keys(dto);
     
@@ -64,7 +64,7 @@ export class UsersService {
   // ========== EJEMPLOS DE MÉTODOS PARA MÚLTIPLES BASES DE DATOS ==========
 
   // Buscar por email en una base de datos específica
-  async findByEmailInDepartment(email: string, claveDepartamento: number) {
+  async findByEmailInDepartment(email: string, claveDepartamento: string) {
     const results = await this.dynamicDb.executeQueryByDepartmentId(
       claveDepartamento,
       `SELECT * FROM Usuarios WHERE Correo = @Correo`,
@@ -75,7 +75,7 @@ export class UsersService {
   }
 
   // Buscar por ClaveUsuario en un departamento específico
-  async findByClaveUsuarioInDepartment(claveUsuario: number, claveDepartamento: number) {
+  async findByClaveUsuarioInDepartment(claveUsuario: string, claveDepartamento: string) {
     const results = await this.dynamicDb.executeQueryByDepartmentId(
       claveDepartamento,
       `SELECT * FROM Usuarios WHERE ClaveUsuario = @ClaveUsuario`,

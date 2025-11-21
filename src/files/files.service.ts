@@ -13,7 +13,7 @@ export class FilesService {
     private readonly usersService: UsersService,
   ) {}
 
-  async generateFiles(claveUsuario: number) {
+  async generateFiles(claveUsuario: string) {
     try {
       this.logger.log(`Iniciando generación de archivos para usuario: ${claveUsuario}`);
       

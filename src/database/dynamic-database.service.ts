@@ -3,7 +3,7 @@ import { MssqlService } from '@strongnguyen/nestjs-mssql';
 import * as sql from 'mssql';
 
 interface DepartmentConnection {
-  claveDepartamento: number;
+  claveDepartamento: string;
   nombre: string;
   url: string;
   correo?: string;
@@ -72,7 +72,7 @@ export class DynamicDatabaseService implements OnModuleDestroy {
   }
 
   // Obtener configuración de un departamento específico por ClaveDepartamento
-  async getDepartmentConnectionById(claveDepartamento: number): Promise<DepartmentConnection | null> {
+  async getDepartmentConnectionById(claveDepartamento: string): Promise<DepartmentConnection | null> {
     const pool = this.mssql.getPool();
     const result = await pool
       .request()
@@ -112,7 +112,7 @@ export class DynamicDatabaseService implements OnModuleDestroy {
   }
 
   // Crear o obtener una conexión por ClaveDepartamento
-  async getConnectionByDepartmentId(claveDepartamento: number): Promise<sql.ConnectionPool> {
+  async getConnectionByDepartmentId(claveDepartamento: string): Promise<sql.ConnectionPool> {
     const connectionKey = `dept_${claveDepartamento}`;
     
     // Si ya existe la conexión, verificar si está activa
@@ -181,7 +181,7 @@ export class DynamicDatabaseService implements OnModuleDestroy {
 
   // Ejecutar query en la base de datos de un departamento específico (por ID)
   async executeQueryByDepartmentId<T = any>(
-    claveDepartamento: number,
+    claveDepartamento: string,
     query: string,
     inputs?: { name: string; value: any }[]
   ): Promise<T[]> {
@@ -220,7 +220,7 @@ export class DynamicDatabaseService implements OnModuleDestroy {
   }
 
   // Cerrar conexión de un departamento específico
-  async closeDepartmentConnection(claveDepartamento: number): Promise<void> {
+  async closeDepartmentConnection(claveDepartamento: string): Promise<void> {
     const connectionKey = `dept_${claveDepartamento}`;
     
     if (this.connections.has(connectionKey)) {
@@ -232,7 +232,7 @@ export class DynamicDatabaseService implements OnModuleDestroy {
   }
 
   // Recargar conexión de un departamento
-  async reloadDepartmentConnection(claveDepartamento: number): Promise<void> {
+  async reloadDepartmentConnection(claveDepartamento: string): Promise<void> {
     await this.closeDepartmentConnection(claveDepartamento);
     await this.getConnectionByDepartmentId(claveDepartamento);
   }

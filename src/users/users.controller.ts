@@ -7,7 +7,6 @@ import {
   Request,
   UseGuards,
   HttpStatus,
-  ParseIntPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -42,7 +41,7 @@ export class UsersController {
 
   // Obtener usuario por ClaveUsuario
   @Get(':claveUsuario')
-  async getUserByClaveUsuario(@Param('claveUsuario', ParseIntPipe) claveUsuario: number) {
+  async getUserByClaveUsuario(@Param('claveUsuario') claveUsuario: string) {
     const user = await this.usersService.findByClaveUsuario(claveUsuario);
     
     if (!user) {
@@ -63,7 +62,7 @@ export class UsersController {
   // Editar datos del usuario
   @Patch(':claveUsuario')
   async updateUser(
-    @Param('claveUsuario', ParseIntPipe) claveUsuario: number,
+    @Param('claveUsuario') claveUsuario: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     const result = await this.usersService.updateUser(claveUsuario, updateUserDto);
@@ -80,43 +79,6 @@ export class UsersController {
       success: true,
       statusCode: 200,
       message: 'Usuario actualizado exitosamente',
-      data: result,
-    };
-  }
-
-  // Obtener usuarios de un departamento específico
-  @Get('department/:claveDepartamento')
-  async getUsersByDepartment(@Param('claveDepartamento', ParseIntPipe) claveDepartamento: number) {
-    try {
-      const users = await this.usersService.getAllUsersFromAllDepartments();
-      const departmentUsers = users.find(dept => dept.claveDepartamento === claveDepartamento);
-      
-      return {
-        success: true,
-        statusCode: 200,
-        data: departmentUsers || { usuarios: [] },
-      };
-    } catch (error) {
-      return {
-        success: false,
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
-      };
-    }
-  }
-
-  // Actualizar mi información (usuario autenticado)
-  @Patch('me/update')
-  async updateMyInfo(
-    @Request() req,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    const result = await this.usersService.updateUser(req.user.claveUsuario, updateUserDto);
-    
-    return {
-      success: true,
-      statusCode: 200,
-      message: 'Información actualizada exitosamente',
       data: result,
     };
   }

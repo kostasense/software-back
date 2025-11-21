@@ -14,8 +14,9 @@ export class TicketsService {
   // Crear ticket individual
   async createTicket(data: {
     motivo: string;
-    claveProfesor: number;
-    claveDepartamento: number;
+    claveProfesor: string;
+    claveDepartamento: string;
+    claveDocumento: string;
   }) {
     try {
       this.logger.log('Creando ticket en la base de datos');
@@ -30,7 +31,7 @@ export class TicketsService {
   }
 
   // Obtener ticket por claveTicketGeneral
-  async getTicket(claveTicketGeneral: number) {
+  async getTicket(claveTicketGeneral: string) {
     try {
       this.logger.log(`Buscando tickets con ClaveTicketGeneral: ${claveTicketGeneral}`);
       
@@ -44,7 +45,7 @@ export class TicketsService {
   }
 
   // Actualizar ticket (agregar resolución)
-  async updateTicket(claveTicket: number, resolucion: string) {
+  async updateTicket(claveTicket: string, resolucion: string) {
     try {
       this.logger.log(`Actualizando resolución del ticket: ${claveTicket}`);
       
@@ -60,7 +61,7 @@ export class TicketsService {
   // Crear ticket general
   async createGeneralTicket(data: {
     motivo: string;
-    claveProfesor: number;
+    claveProfesor: string;
   }) {
     try {
       this.logger.log('Creando ticket general en la base de datos');
@@ -75,7 +76,7 @@ export class TicketsService {
   }
 
   // Obtener resoluciones de un ticket general
-  async getGeneralTicketResolutions(claveTicketGeneral: number) {
+  async getGeneralTicketResolutions(claveTicketGeneral: string) {
     try {
       this.logger.log(`Buscando resoluciones del ticket general: ${claveTicketGeneral}`);
       
@@ -90,9 +91,9 @@ export class TicketsService {
 
   // Actualizar ticket general
   async updateGeneralTicket(
-    claveTicketGeneral: number, 
+    claveTicketGeneral: string, 
     resolucion: string, 
-    claveDepartamento: number
+    claveDepartamento: string
   ) {
     try {
       this.logger.log(`Actualizando ticket general: ${claveTicketGeneral} para departamento: ${claveDepartamento}`);

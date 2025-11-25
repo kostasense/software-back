@@ -3,6 +3,7 @@ export interface Base {
     titular: string;
     departamento: string;
     subdireccion?: string;
+    claveDocumento?: string;
 }
 
 /**
@@ -132,7 +133,7 @@ export interface CurriculumVitae extends Base {
  */
 export interface LicenciasEspeciales extends Base {
     tipoLicencia?: string | null;
-    claveAutorizacion?: string | null;
+    claveOficioAutorizacion?: string | null;
     fechaInicio?: Date | null;
     fechaFin?: Date | null;
 }

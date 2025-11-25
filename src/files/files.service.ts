@@ -228,28 +228,64 @@ export class FilesService {
   // ========== MÉTODOS ESPECIFICOS POR DOCUMENTO ==========
   
   /**
-   * DOC033: Comisión por asesoría en concursos
+   * DOC033, DOC034, DOC035, DOC036: Asesorías en concursos
    * @param base DocumentInterfaces.Base
    * @param claveDocente string
    * @param claveDepartamento string
    * @param año number
+   * @param options tipoDocumento | proyectorPremiado
    */
   async generateComisionAsesoriaConcursos(
     base: DocumentInterfaces.Base,
     claveDocente: string,
     claveDepartamento: string,
-    año: number
+    año: number,
+    options: {
+      tipo: 'comision' | 'constancia',
+      premiado: boolean
+    }
   ): Promise<DocumentInterfaces.AsesoriaConcuros[]> {
-    const query = `
-      SELECT 
-        e.NombreEvento AS nombreEvento,
-        ae.FechaInicio AS FechaInicio, 
-        ae.FechaFin AS FechaFin
-      FROM AsesoriaEvento ae
-      INNER JOIN Evento e ON e.ClaveEvento = ae.ClaveEvento
-      WHERE ae.ClaveDocente = @ClaveDocente
-        AND YEAR(e.FechaInicio) = @Año
-    ` 
+    // Consulta dependerá de las opciones
+    let query = (
+      options.premiado 
+      ? options.tipo === 'comision'
+        ?  `SELECT 
+              e.NombreEvento AS nombreEvento, 
+              ae.FechaInicio AS fechaInicio, 
+              ae.FechaFin AS fechaFin
+            FROM AsesoriaEvento ae
+            INNER JOIN Evento e ON e.ClaveEvento = ae.ClaveEvento
+            LEFT JOIN Asesoria_ProyectoPremiado app ON app.ClaveAsesoria = ae.ClaveAsesoria
+            WHERE ae.claveDocente = @ClaveDocente
+              AND YEAR(ae.FechaInicio) = @Año` 
+        :  `SELECT 
+              e.NombreConcurso AS nombreConcurso, 
+              ae.NombreProyecto AS nombreProyecto,
+              app.LugarPremiado AS lugarPremiado
+            FROM AsesoriaEvento ae
+            INNER JOIN Evento e ON e.ClaveEvento = ae.ClaveEvento
+            LEFT JOIN Asesoria_ProyectoPremiado app ON app.ClaveAsesoria = ae.ClaveAsesoria
+            WHERE ae.ClaveDocente = @ClaveDocente
+              AND YEAR(ae.FechaInicio) = @Año`
+      : options.tipo === 'comision'
+        ?  `SELECT 
+              e.NombreEvento AS nombreEvento,
+              ae.FechaInicio AS fechaInicio, 
+              ae.FechaFin AS fechaFin
+            FROM AsesoriaEvento ae
+            INNER JOIN Evento e ON e.ClaveEvento = ae.ClaveEvento
+            WHERE ae.ClaveDocente = @ClaveDocente
+              AND YEAR(e.FechaInicio) = @Año` 
+        :  `SELECT 
+              e.NombreConcurso as nombreEvento, 
+              e.Ubicacion as ubicacion, 
+              ae.FechaInicio as fechaInicio, 
+              ae.FechaFin as fechaFin
+            FROM AsesoriaEvento ae
+            INNER JOIN Evento e ON e.ClaveEvento = ae.ClaveEvento
+            WHERE ae.ClaveDocente = @ClaveDocente
+              AND YEAR(ae.FechaInicio) = @Año` 
+    )
 
     const result = await this.dynamicDb.executeQueryByDepartmentId(
       claveDepartamento,
@@ -258,136 +294,20 @@ export class FilesService {
        {name: 'Año', value: año}]
     ) 
 
+    let titular;
+    if (options.tipo === 'constancia') 
+      titular = await this.getDepartmentHeadById('DSUBD10'); 
 
 
     return result.map(row => ({
       ...base,
       evento: row.nombreEvento,
-      fechaInicio: row.FechaInicio,
-      fechaFin: row.FechaFin
-    }));
-  }
-
-  /**
-   * DOC034: Constancia por asesoría en concursos
-   * @param base DocumentInterfaces.Base
-   * @param claveDocente string
-   * @param claveDepartamento string
-   * @param año number
-   */
-  async generateConstanciaAsesoriaConcursos(
-    base: DocumentInterfaces.Base,
-    claveDocente: string, 
-    claveDepartamento: string,
-    año: number
-  ): Promise<DocumentInterfaces.AsesoriaConcuros[]> {
-    const query = `
-      SELECT 
-        e.NombreConcurso as nombreEvento, 
-        e.Ubicacion as ubicacion, 
-        ae.FechaInicio as fechaInicio, 
-        ae.FechaFin as fechaFin
-      FROM AsesoriaEvento ae
-      INNER JOIN Evento e ON e.ClaveEvento = ae.ClaveEvento
-      WHERE ae.ClaveDocente = @ClaveDocente
-        AND YEAR(ae.FechaInicio) = @Año
-    ` 
-
-    const result = await this.dynamicDb.executeQueryByDepartmentId(
-      claveDepartamento,
-      query,
-      [{name: 'ClaveDocente', value: claveDocente}, 
-       {name: 'Año', value: año}]
-    )
-    const titular = await this.getDepartmentHeadById('DSUBD10'); 
-
-    return result.map(row => ({
-      ...base,
-      subdireccion: titular,
-      evento: row.nombreEvento,
-      ubicacion: row.ubicacion,
-      fechaInicio: row.fechaInicio,
-      fechaFin: row.fechaFin,
-    }));
-  }
-
-  /**
-   * DOC035: Comisión por asesoría en proyectos premiados en concurso
-   * @param base DocumentInterfaces.Base
-   * @param claveDocente string
-   * @param claveDepartamento string
-   * @param año number
-   */
-  async generateComisionProyectosPremiados(
-    base: DocumentInterfaces.Base,
-    claveDocente: string, 
-    claveDepartamento: string,
-    año: number
-  ): Promise<DocumentInterfaces.AsesoriaConcuros[]> {
-    const query = `
-      SELECT 
-        e.NombreEvento AS nombreEvento, 
-        ae.FechaInicio AS fechaInicio, 
-        ae.FechaFin AS fechaFin
-      FROM AsesoriaEvento ae
-      INNER JOIN Evento e ON e.ClaveEvento = ae.ClaveEvento
-      INNER JOIN Asesoria_ProyectoPremiado app ON app.ClaveAsesoria = ae.ClaveAsesoria
-      WHERE ae.claveDocente = @ClaveDocente
-        AND YEAR(ae.FechaInicio) = @Año
-      `
-
-    const result = await this.dynamicDb.executeQueryByDepartmentId(
-      claveDepartamento,
-      query,
-      [{name: 'ClaveDocente', value: claveDocente},
-       {name: 'Año', value: año}]
-    )
-
-    return result.map(row => ({
-      ...base,
-      evento: row.nombreEvento,
-      fechaInicio: row.fechaInicio,
-      fechaFin: row.fechaFin,
-    }));
-  }
-
-  /**
-   * DOC036: Constancia por asesoría en proyectos premiados en concurso
-   * @param base DocumentInterfaces.Base
-   * @param claveDocente string
-   * @param claveDepartamento string
-   * @param año number
-   */
-  async generateConstanciaProyectosPremiados(
-    base: DocumentInterfaces.Base,
-    claveDocente: string, 
-    claveDepartamento: string,
-    año: number
-  ): Promise<DocumentInterfaces.AsesoriaConcuros[]> {
-    const query = `
-      SELECT 
-        e.NombreConcurso AS nombreConcurso, 
-        ae.NombreProyecto AS nombreProyecto,
-        app.LugarPremiado AS lugarPremiado
-      FROM AsesoriaEvento ae
-      INNER JOIN Evento e ON e.ClaveEvento = ae.ClaveEvento
-      INNER JOIN Asesoria_ProyectoPremiado app ON app.ClaveAsesoria = ae.ClaveAsesoria
-      WHERE ae.ClaveDocente = @ClaveDocente
-          AND YEAR(ae.FechaInicio) = @Año
-    `
-
-    const result = await this.dynamicDb.executeQueryByDepartmentId(
-      claveDepartamento,
-      query,
-      [{name: 'ClaveDocente', value: claveDocente},
-       {name: 'Año', value: año}]
-    )
-
-    return result.map(row => ({
-      ...base,
-      evento: row.nombreConcurso,
-      nombreProyecto: row.nombreProyecto,
+      ubicacion: row?.ubicacion ?? null,
+      nombreProyecto: row?.nombreProyecto ?? null,
       lugarPremiado: row.lugarPremiado,
+      fechaInicio: row.fechaInicio,
+      fechaFin: row.fechaFin,
+      subdireccion: options.tipo === 'constancia' ? titular : null,
     }));
   }
 
@@ -426,7 +346,7 @@ export class FilesService {
       ...base,
       evento: row.nombreEvento,
       fechaInicio: row.fechaInicio,
-      fechaFin: row.fechaFin,
+      fechaFin: row.fechaFin
     }));
   }
 
@@ -478,7 +398,7 @@ export class FilesService {
       funcion: row.funcion,
       actividades: row.actividades,
       fechaInicio: row.fechaInicio,
-      fechaFin: row.fechaFin,
+      fechaFin: row.fechaFin
     }));
   }
 
@@ -517,7 +437,7 @@ export class FilesService {
       ...base,
       evento: row.nombreEvento,
       fechaInicio: row.fechaInicio,
-      ubicación: row.lugar,
+      ubicación: row.lugar
     }));
   }
 
@@ -557,7 +477,7 @@ export class FilesService {
       ...base,
       subdireccion: titular,
       evento: row.nombreEvento,
-      categoria: row.categoria,
+      categoria: row.categoria
     }));
   }
 
@@ -599,7 +519,7 @@ export class FilesService {
       ...base,
       comite: row.comite,
       tipo: row.tipo,
-      organismo: row.organismo,
+      organismo: row.organismo
     }));
   }
 
@@ -638,7 +558,7 @@ export class FilesService {
       ...base,
       subdireccion: titular,
       tipo: row.tipo,
-      organismo: row.organismo,
+      organismo: row.organismo
     }));
   }
 
@@ -671,7 +591,7 @@ export class FilesService {
 
     return result.map(row => ({
       ...base,
-      tipoSistema: row.tipoSistema,
+      tipoSistema: row.tipoSistema
     }));
   }
 
@@ -716,7 +636,7 @@ export class FilesService {
       fechaInicio: row.fechaInicio,
       fechaFin: row.fechaFin,
       lugar: row.lugar,
-      subdireccion: titular,
+      subdireccion: titular
     }));
   }
 
@@ -752,17 +672,23 @@ export class FilesService {
     return result.map(row => ({
       ...base,
       fechaInicio: row.fechaInicio,
-      fechaFin: row.fechaFin,
+      fechaFin: row.fechaFin
     }));
   }
 
   /**
    * DOC046: Constancia por elaboración de planes y programas (local)
-   * @param claveDocente: string
-   * @param año: number
-   * @param claveDepartamento: string
+   * @param base DocumentInterfaces.Base
+   * @param claveDocente string
+   * @param claveDepartamento string
+   * @param año number
    */
-  async generateDOC046(claveDocente: string, año: number, claveDepartamento: string) {
+  async generateConstanciaPlanesLocal(
+    base: DocumentInterfaces.Base,
+    claveDocente: string, 
+    claveDepartamento: string,
+    año: number
+  ): Promise<DocumentInterfaces.DesarrolloCurricular[]> {
     const query = `
       SELECT 
         p.NombrePrograma AS nombrePrograma,
@@ -782,19 +708,27 @@ export class FilesService {
        {name: 'Año', value: año}]
     )
 
-    return (result.length === 0 ? null : {
-      planes: result,
-      titular: await this.getDepartmentHeadById(claveDepartamento)
-    });
+    return result.map(row => ({
+      ...base,
+      programa: row.nombrePrograma,
+      fechaInicio: row.fechaInicio,
+      fechaFin: row.fechaFin
+    }));
   }
 
   /**
    * DOC047: Constancia por elaboración de planes y programas (nacional)
-   * @param claveDocente: string
-   * @param año: number
-   * @param claveDepartamento: string
+   * @param base DocumentInterfaces.Base
+   * @param claveDocente string
+   * @param claveDepartamento string
+   * @param año number
    */
-  async generateDOC047(claveDocente: string, año: number, claveDepartamento: string) {
+  async generateConstanciaPlanesNacional(
+    base: DocumentInterfaces.Base, 
+    claveDocente: string, 
+    claveDepartamento: string,
+    año: number
+  ): Promise<DocumentInterfaces.DesarrolloCurricular[]> {
     const query = `
     SELECT 
       p.NombrePrograma AS nombrePrograma,
@@ -814,20 +748,27 @@ export class FilesService {
        {name: 'Año', value: año}]
     )
 
-    return (result.length === 0 ? null : {
-      planes: result,
-      titular: await this.getDepartmentHeadById(claveDepartamento)
-    });
+    return result.map(row => ({
+      ...base,
+      programa: row.nombrePrograma,
+      fechaInicio: row.fechaInicio,
+      fechaFin: row.fechaFin
+    }));
   }
   
-
   /**
    * DOC048 - Comisión para la elaboración de módulos de especialidad
-   * @param claveDocente: string
-   * @param año: number
-   * @param claveDepartamento: string
+   * @param base DocumentInterfaces.Base
+   * @param claveDocente string
+   * @param claveDepartamento string
+   * @param año number
    */
-  async generateDOC048(claveDocente: string, año: number, claveDepartamento: string) {
+  async generateComisionModulos(
+    base: DocumentInterfaces.Base,
+    claveDocente: string, 
+    claveDepartamento: string,
+    año: number
+  ): Promise<DocumentInterfaces.DesarrolloCurricular[]> {
     const query = `
       SELECT 
         p.NombrePrograma AS nombrePrograma,
@@ -847,19 +788,28 @@ export class FilesService {
        {name: 'Año', value: año}]
     )
 
-    return (result.length === 0 ? null : {
-      modulos: result,
-      titular: await this.getDepartmentHeadById(claveDepartamento)
-    });
+    return result.map(row => ({
+      ...base,
+      programa: row.nombrePrograma,
+      fechaInicio: row.fechaInicio,
+      fechaFin: row.fechaFin
+    }));
   }
 
   /**
    * DOC049: Registro de modulos de especialidad
-   * @param claveDocente: string
-   * @param año: number
-   * @param claveDepartamento: string
+   * DOC050: Constancia por la elaboracion de modulos de especialidad
+   * @param base DocumentInterfaces.Base
+   * @param claveDocente string
+   * @param claveDepartamento string
+   * @param año number
    */
-  async generateDOC049(claveDocente: string, año: number, claveDepartamento: string) {
+  async generateElaboracionModulos(
+    base: DocumentInterfaces.Base,
+    claveDocente: string, 
+    claveDepartamento: string,
+    año: number
+  ) {
     const query = `
       SELECT 
         STRING_AGG(lm.NombreModulo, ', ') AS modulos,
@@ -882,54 +832,29 @@ export class FilesService {
        {name: 'Año', value: año}]
     )
 
-    return (result.length === 0 ? null : {
-      modulos: result,
-      titular: await this.getDepartmentHeadById(claveDepartamento)
-    });
-  }
+    const titular = await this.getDepartmentHeadById('DSUBD10');
 
-    /**
-   * DOC050: Constancia por la elaboracion de modulos de especialidad
-   * @param claveDocente: string
-   * @param año: number
-   * @param claveDepartamento: string
-   */
-  async generateDOC050(claveDocente: string, año: number, claveDepartamento: string) {
-    const query = `
-      SELECT 
-        STRING_AGG(lm.NombreModulo, ', ') AS modulos,
-        p.NombrePrograma AS programa
-      FROM ElaboracionModuloEspecialidad eme
-      INNER JOIN ListaModulo lm ON eme.ClaveRegistro = lm.ClaveRegistro
-      INNER JOIN Programa p ON p.ClavePrograma = eme.ClavePrograma
-      WHERE eme.ClaveDocente = (inputCLAVE)
-        AND eme.Nivel = 'LICENCIATURA'
-        AND YEAR(eme.FechaInicio) = (inputAÑO)
-      GROUP BY 
-        p.NombrePrograma, 
-        eme.ClaveDocente
-    `
-
-    const result = await this.dynamicDb.executeQueryByDepartmentId(
-      claveDepartamento,
-      query,
-      [{name: 'ClaveDocente', value: claveDocente},
-       {name: 'Año', value: año}]
-    )
-
-    return (result.length === 0 ? null : {
-      modulos: result,
-      titular: await this.getDepartmentHeadById(claveDepartamento)
-    });
+    return result.map(row => ({
+      ...base,
+      subdireccion: titular,
+      modulos: row.modulos,
+      programa: row.nombrePrograma
+    }));
   }
 
   /**
    * DOC051: Comisión para la apertura de programas
-   * @param claveDocente: string
-   * @param año: number
-   * @param claveDepartamento: string
+   * @param base DocumentInterfaces.Base
+   * @param claveDocente string
+   * @param claveDepartamento string
+   * @param año number
    */
-  async generateDOC051(claveDocente: string, año: number, claveDepartamento: string) {
+  async generateConstanciaAperturaProgramas(
+    base: DocumentInterfaces.Base, 
+    claveDocente: string, 
+    claveDepartamento: string,
+    año: number
+  ): Promise<DocumentInterfaces.DesarrolloCurricular[]> {
     const query = `
       SELECT 
         ap.NombrePrograma AS nombrePrograma,
@@ -948,10 +873,13 @@ export class FilesService {
        {name: 'Año', value: año}]
     )
 
-    return (result.length === 0 ? null : {
-      programas: result,
-      titular: await this.getDepartmentHeadById(claveDepartamento)
-    });
+    return result.map(row => ({
+      ...base,
+      programa: row.nombrePrograma,
+      nivel: row.nivel,
+      fechaInicio: row.fechaInicio,
+      fechaFin: row.fechaFin
+    }));
   }
 
   /**

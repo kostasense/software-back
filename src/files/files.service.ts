@@ -234,9 +234,9 @@ export class FilesService {
 
   /**
    * Obtener documentos por departamento
-   * @param claveDepartamento: string
-   * @param año: number
-   * @param claveDocente: string
+   * @param claveDepartamento string
+   * @param año number
+   * @param claveDocente string
    */
   async getFilesByDepartment(
     claveDocente: string, 
@@ -266,6 +266,44 @@ export class FilesService {
   }
 
   // ========== MÉTODOS AUXILIARES ==========
+  /**
+   * Verificar si un docente solo tiene asignaturas posgrado
+   * @param claveDocente string
+   * @param claveDepartamento string
+   * @param año number
+   * @param semeste string
+   */
+  async checkCourses(
+    claveDocente: string,
+    claveDepartamento: string,
+    año: number,
+    semeste: string
+  ): Promise<boolean> {
+
+    const pool = this.dynamicDb.executeQueryByDepartmentId(
+      claveDepartamento,
+      `SELECT ad.ClaveDocente
+       FROM Asignatura_Docente ad
+       INNER JOIN Asignatura a ON a.ClaveAsignatura = ad.ClaveAsignatura
+       WHERE ad.ClaveDocente = @ClaveDocente
+          AND a.Nivel = 'POSGRADO'
+          AND ad.Año = @Año
+          AND ad.Semestre = @Semestre
+      GROUP BY ad.ClaveDocente
+      HAVING COUNT(*) = (
+          SELECT COUNT(*) 
+          FROM Asignatura_Docente 
+          WHERE ClaveDocente = @ClaveDocente
+            AND Año = @Año
+            AND Semestre = @Semestre`,
+      [{ name: 'ClaveDocente', value: claveDocente },
+      { name: 'Año', value: año },
+      { name: 'Semestre', value: semeste }]
+    );
+
+    return (await pool).length > 0;
+  }
+
   /**
    * Insertar expediente en la base de datos
    * @param expediente Expediente
@@ -417,6 +455,23 @@ export class FilesService {
       `);
 
     return result.recordset[0]?.nombre || null;
+  }
+
+  /**
+   * Obtener clave de departamento por nombre
+   * @param nombreDepartamento string
+   */
+  async getDepartmentIdByName(nombreDepartamento: string) {
+    const pool = this.mssql.getPool();
+    const result = await pool
+      .request()
+      .input('NombreDepartamento', `%${nombreDepartamento}%`)
+      .query(`
+        SELECT ClaveDepartamento AS claveDepartamento
+        FROM Departamento
+        WHERE Nombre LIKE @NombreDepartamento
+      `);
+    return result.recordset[0]?.claveDepartamento || null;
   }
 
   /**

@@ -29,11 +29,59 @@ export class ValidationServices {
     async requisitosIniciales(
         claveDocente: string
     ): Promise<Requirement[]> {
-        const resultados: Requirement[] = [];
-        
-        const validation: Record<string, Validation> = {};
 
-        return resultados;
+        const añoEvaluar = new Date().getFullYear() - 1;
+
+        // Obtener clave de departamentos
+        const academia = await this.filesService.getDepartmentByProfessorId(claveDocente);
+        const recursosHumanos = await this.filesService.getDepartmentIdByName('recursos humanos');
+        const docencia = await this.filesService.getDepartmentIdByName('docencia');
+        const desarrolloAcademico = await this.filesService.getDepartmentIdByName('desarrollo académico');
+
+
+        // Verificar asignaturas posgrado en los dos semestres
+        const checkFirstSemester = await this.filesService.checkCourses(claveDocente, academia, añoEvaluar, 'ENERO-JUNIO');
+        const checkSecondSemester = await this.filesService.checkCourses(claveDocente, academia, añoEvaluar, 'AGOSTO-DICIEMBRE');
+        
+        let departamentoPosgrado: string | null = null;
+        let departamentoAcademia: string | null = null;
+
+        departamentoPosgrado = checkFirstSemester || checkSecondSemester
+            ? await this.filesService.getDepartmentIdByName('posgrado') : null;
+        
+        departamentoAcademia = !checkFirstSemester || !checkSecondSemester
+            ? academia : null;
+
+        const validation: Record<number, Validation> = {
+            0: this.recursosHumanos.bind(this),
+            1: this.cargaReglamentaria.bind(this),
+            2: this.proyectoInvestigacion.bind(this),
+            3: this.curriculumVitae.bind(this),
+            4: this.actividadesDocentes.bind(this),
+            5: this.evaluacionesDepartamentales.bind(this),
+            6: this.evaluacionesDepartamentales.bind(this),
+            7: this.evaluacionesGrupo.bind(this)
+        };
+
+        const departamentos = [recursosHumanos, 
+                               academia, 
+                               docencia, 
+                               desarrolloAcademico, 
+                               academia, 
+                               departamentoAcademia,
+                               departamentoPosgrado, 
+                               desarrolloAcademico];
+
+        const requeriments: Requirement[] = [];
+        for (const key in validation) {
+            const dept = departamentos[key];
+            if (dept) {
+                const result = await validation[key](claveDocente, dept, añoEvaluar);
+                requeriments.push(...result);
+            }
+        }
+
+        return requeriments;
     }
 
     /*
@@ -94,8 +142,7 @@ export class ValidationServices {
     async cargaReglamentaria(
         claveDocente: string,
         claveDepartamento: string,
-        añoActual: number,
-        añoEvaluar: number,
+        año: number
     ): Promise<Requirement[]> {
 
         const carga = await this.dynamicDatabaseService.executeQueryByDepartmentId(
@@ -121,7 +168,10 @@ export class ValidationServices {
             ) CargaHoraria
             GROUP BY CargaHoraria.Año, CargaHoraria.Semestre
             ORDER Año, Semestre
-            `
+            `,
+            [{ name: 'ClaveDocente', value: claveDocente },
+             { name: 'AñoEvaluar', value: año },
+             { name: 'AñoActual', value: new Date().getFullYear() }]
         )
 
         const proyecto = await this.proyectoInvestigacion(claveDocente, 'DDIRD09');
@@ -200,12 +250,6 @@ export class ValidationServices {
             value: curriculum.length > 0
         }];
     }
-
-    /**
-     *  Constancia emitida por la persona titular del Departamento de Servicios Escolares que indique por semestre, 
-     *  el nivel, el nombre y la clave de las asignaturas que impartió, así como la cantidad de estudiantes atendidos 
-     *  en cada grupo durante el periodo a evaluar.
-     */
     
     /**
      *  * Constancias de cumplimiento de las actividades docentes encomendadas en tiempo y forma mediante el
@@ -274,7 +318,7 @@ export class ValidationServices {
 
         return [{
             name: 'Evaluaciones departamentales con calificación mínima de SUFICIENTE',
-            value: evaluaciones.length === 2
+            value: evaluaciones.length > 0
         }];
     }
 

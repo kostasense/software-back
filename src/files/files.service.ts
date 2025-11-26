@@ -1000,10 +1000,13 @@ export class FilesService {
        {name: 'Año', value: año}]
     )
 
+    const direccion = await this.getDepartmentHeadById('DDIRE02');
+
     return result.map(row => ({
       ...base,
       nombreProyecto: row.nombreProyecto,
       descripcion: row.descripcion,
+      direccion: direccion || null,
     }));
   }
   

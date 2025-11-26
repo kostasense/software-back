@@ -117,6 +117,7 @@ export interface PrestacionServicios extends Base {
 export interface ProyectoInvestigacion extends Base {
     proyecto?: string | null;
     descripcion?: string | null;
+    direccion?: string | null;
 }
 
 /**

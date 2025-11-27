@@ -99,8 +99,8 @@ export class ValidationServices {
         const nombramiento = await this.dynamicDatabaseService.executeQueryByDepartmentId(
             claveDepartamento,
             `SELECT 
-                Estado as estado,
-                Fecha as fechaIngreso,
+                Estatus as estado,
+                FechaIngreso as fechaIngreso,
                 CargaHoraria as cargaHoraria
             FROM Docente
             WHERE ClaveDocente = @ClaveDocente`,
@@ -147,28 +147,25 @@ export class ValidationServices {
 
         const carga = await this.dynamicDatabaseService.executeQueryByDepartmentId(
             claveDepartamento,
-            `SELECT 
-                SUM(Horas) as total,
-                SEMESTRE,
-                AÑO   
-            FROM (
-                SELECT 
+           `SELECT 
+                SUM(
                     CASE
-                        WHEN g.horario LIKE '%LUN-VIE%' THEN 5
-                        WHEN g.horario LIKE '%LUN-JUE%' THEN 4
-                        ELSE 0
-                    END AS Horas,
-                    g.Semestre,
-                    g.Año
-                FROM Grupo g
-                INNER JOIN Asignatura_Docente ad ON g.ClaveGrupo = ad.ClaveGrupo
-                WHERE ad.claveDocente = @ClaveDocente
-                    AND (g.Año = @AñoEvaluar or (g.Año = @AñoActual and g.Semestre = 'ENERO-JUNIO'))
-                    GROUP BY g.Horario, g.Semestre, g.Año
-            ) CargaHoraria
-            GROUP BY CargaHoraria.Año, CargaHoraria.Semestre
-            ORDER Año, Semestre
-            `,
+                        WHEN g.Horario LIKE '%LUN-VIE%' THEN 5
+                        WHEN g.Horario LIKE '%LUN-JUE%' THEN 4
+                    END
+                ) AS total
+            FROM Asignatura_Docente ad
+            INNER JOIN Grupo g 
+                ON ad.ClaveGrupo = g.ClaveGrupo 
+                AND ad.Año = g.Año 
+                AND ad.Semestre = g.Semestre
+            WHERE ad.ClaveDocente = @ClaveDocente
+                AND (
+                    ad.Año = @AñoEvaluar 
+                    OR (ad.Año = @AñoActual AND ad.Semestre = 'ENERO-JUNIO')
+                )
+            GROUP BY ad.Año, ad.Semestre
+            ORDER BY ad.Año, ad.Semestre`,
             [{ name: 'ClaveDocente', value: claveDocente },
              { name: 'AñoEvaluar', value: año },
              { name: 'AñoActual', value: new Date().getFullYear() }]
@@ -198,7 +195,7 @@ export class ValidationServices {
             `SELECT 
                 Categoria as categoria
             FROM Docente 
-            WHERE ClaveDocente = @ClaveDocente,
+            WHERE ClaveDocente = @ClaveDocente
                 AND Categoria LIKE '%INVESTIGADOR%'`,
             [{ name: 'ClaveDocente', value: claveDocente }]
         )

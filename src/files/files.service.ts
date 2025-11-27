@@ -394,9 +394,15 @@ export class FilesService {
       .input('ClaveDepartamento', claveDepartamento)
       .query(`
         SELECT ClaveDocumento as claveDocumento
-        FROM Actividad_Documento
-        WHERE ClaveDepartamento = @ClaveDepartamento 
-          OR ClaveDepartamento IS NULL
+        FROM SAPEDD.dbo.Actividad_Documento
+        WHERE ClaveDepartamento = @ClaveDepartamento
+            OR (ClaveDepartamento IS NULL 
+                AND NOT EXISTS (
+                    SELECT 1 
+                    FROM SAPEDD.dbo.Actividad_Documento 
+                    WHERE ClaveDepartamento = @ClaveDepartamento
+                )
+            )
       `)
 
       return result.recordset.map(row => row.claveDocumento);
@@ -609,7 +615,7 @@ export class FilesService {
       lugarPremiado: row?.lugarPremiado ?? null,
       fechaInicio: row?.fechaInicio ?? null,
       fechaFin: row?.fechaFin ?? null,
-      subdireccion: titular || null,
+      subdireccion: titular || null
     }));
   }
 
@@ -674,7 +680,7 @@ export class FilesService {
       actividades: row?.actividades ?? null,
       fechaInicio: row?.fechaInicio ?? null,
       fechaFin: row?.fechaFin ?? null,
-      subdireccion: titular || null,
+      subdireccion: titular || null
     }));
   }
 
@@ -728,7 +734,7 @@ export class FilesService {
       fechaInicio: row?.fechaInicio ?? null,
       ubicación: row?.lugar ?? null,
       categoria: row?.categoria ?? null,
-      subdireccion: titular || null,
+      subdireccion: titular || null
     }));
   }
 
@@ -753,8 +759,8 @@ export class FilesService {
               WHEN ce.Tipo LIKE '%evaluación%'
               THEN 'EVALUACIÓN'
               ELSE 'ACREDITACIÓN'
-            END AS comite
-            ce.Tipo AS tipo
+            END AS comite,
+            ce.Tipo AS tipo,
             ce.Organismo AS organismo
           FROM ComiteEvaluador ce
           WHERE ce.ClaveDocente = @ClaveDocente
@@ -836,7 +842,7 @@ export class FilesService {
       fechaInicio: row?.fechaInicio ?? null,
       fechaFin: row?.fechaFin ?? null,
       lugar: row?.lugar ?? null,
-      subdireccion: titular || null,
+      subdireccion: titular || null
     }));
   }
 
@@ -974,7 +980,8 @@ export class FilesService {
             ap.FechaInicio AS fechaInicio,
             ap.FechaFin AS fechaFin
           FROM AperturaPrograma ap
-          WHERE ap.ClaveDocente = @ClaveDocente
+          INNER JOIN Direccion.dbo.ListaDocentes ld ON ap.ClavePrograma = ld.ClavePrograma
+          WHERE ld.ClaveDocente = @ClaveDocente
               AND YEAR(ap.FechaInicio) = @Año`
       : tipo === 'constancia'
         ?  `SELECT 
@@ -1066,7 +1073,7 @@ export class FilesService {
       estatus: row.estatus,
       cargaHoraria: row.cargaHoraria,
       categoria: row.categoria,
-      plaza: row.plaza,
+      plaza: row.plaza
     }));
   }
 
@@ -1104,7 +1111,7 @@ export class FilesService {
       ...base,
       nombreProyecto: row.nombreProyecto,
       descripcion: row.descripcion,
-      direccion: direccion || null,
+      direccion: direccion || null
     }));
   }
   
@@ -1134,7 +1141,7 @@ export class FilesService {
 
     return result.map(row => ({
       ...base,
-      estado: row.estado,
+      estado: row.estado
     }));
   }
 
@@ -1157,7 +1164,7 @@ export class FilesService {
         le.ClaveOficioAutorizacion AS claveOficioAutorizacion
       FROM LicenciaEspecial le
       WHERE le.ClaveDocente = @ClaveDocente
-        and YEAR(le.FechaInicio) = @Año
+        AND YEAR(le.FechaInicio) = @Año
     `
 
     const result = await this.dynamicDb.executeQueryByDepartmentId(
@@ -1172,7 +1179,7 @@ export class FilesService {
       tipoLicencia: row.tipoLicencia,
       fechaInicio: row.fechaInicio,
       fechaFin: row.fechaFin,
-      claveOficioAutorizacion: row.claveOficioAutorizacion,
+      claveOficioAutorizacion: row.claveOficioAutorizacion
     }));
   }
 
@@ -1230,7 +1237,7 @@ export class FilesService {
       ...base,
       año: row.año,
       semestre: row?.semestre ?? null,
-      estado: row.estado,
+      estado: row.estado
     }));
   }
 
@@ -1281,7 +1288,7 @@ export class FilesService {
       semestre: row.semestre,
       subdireccion: subdireccion || null,
       calificacion: row?.calificacion ?? null,
-      porcentajeEstudiantado: row?.porcentajeEstudiantado ?? null,
+      porcentajeEstudiantado: row?.porcentajeEstudiantado ?? null
     }));
   }
 }

@@ -61,6 +61,43 @@ export class UsersService {
     return result.recordset;
   }
 
+  async changePassword(claveUsuario: string, oldPassword: string, newPassword: string): Promise<boolean> {
+    try {
+        const pool = this.mssql.getPool();
+        
+        // Verificar contraseña actual
+        const user = await pool
+        .request()
+        .input('ClaveUsuario', claveUsuario)
+        .input('Contrasena', oldPassword)
+        .query(`
+            SELECT ClaveUsuario 
+            FROM Usuario 
+            WHERE ClaveUsuario = @ClaveUsuario 
+            AND Contrasena = @Contrasena
+        `);
+        
+        if (!user.recordset[0]) {
+        return false; // Contraseña actual incorrecta
+        }
+        
+        // Actualizar contraseña
+        await pool
+        .request()
+        .input('ClaveUsuario', claveUsuario)
+        .input('NuevaContrasena', newPassword)
+        .query(`
+            UPDATE Usuario 
+            SET Contrasena = @NuevaContrasena 
+            WHERE ClaveUsuario = @ClaveUsuario
+        `);
+        
+        return true;
+    } catch (error) {
+        throw error;
+    }
+  }
+
   // ========== EJEMPLOS DE MÉTODOS PARA MÚLTIPLES BASES DE DATOS ==========
 
   // Buscar por email en una base de datos específica

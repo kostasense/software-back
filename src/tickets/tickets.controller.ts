@@ -17,7 +17,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 export class TicketsController {
   private readonly logger = new Logger(TicketsController.name);
-
+  
   constructor(private readonly ticketsService: TicketsService) {}
 
   // Crear ticket individual
@@ -26,15 +26,14 @@ export class TicketsController {
   async createTicket(
     @Body() createTicketDto: {
       motivo: string;
-      claveProfesor: string;
-      claveDepartamento: string;
       claveDocumento: string;
+      claveUsuario: string; // Usuario que crea el ticket
     }
   ) {
     this.logger.log('Creando nuevo ticket');
     
     try {
-      const result = await this.ticketsService.createTicket(createTicketDto);
+      const result = await this.ticketsService.createTicketByUsuario(createTicketDto);
       
       return {
         success: true,
@@ -44,6 +43,25 @@ export class TicketsController {
       };
     } catch (error) {
       this.logger.error(`Error al crear ticket: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  // Obtener tickets por claveUsuario/Docente
+  @Get('usuario/:claveUsuario')
+  async getTicketsByUsuario(@Param('claveUsuario') claveUsuario: string) {
+    this.logger.log(`Obteniendo tickets del usuario: ${claveUsuario}`);
+    
+    try {
+      const tickets = await this.ticketsService.getTicketsByUsuario(claveUsuario);
+      
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        data: tickets,
+      };
+    } catch (error) {
+      this.logger.error(`Error al obtener tickets: ${error.message}`, error.stack);
       throw error;
     }
   }
@@ -71,15 +89,13 @@ export class TicketsController {
     }
   }
 
-  // Obtener ticket por claveTicketGeneral
-  @Get(':claveTicketGeneral')
-  async getTicket(
-    @Param('claveTicketGeneral') claveTicketGeneral: string
-  ) {
-    this.logger.log(`Obteniendo ticket: ${claveTicketGeneral}`);
+  // Obtener ticket por clave
+  @Get('ticket/:claveTicket')
+  async getTicketByKey(@Param('claveTicket') claveTicket: string) {
+    this.logger.log(`Obteniendo ticket: ${claveTicket}`);
     
     try {
-      const result = await this.ticketsService.getTicket(claveTicketGeneral);
+      const result = await this.ticketsService.getTicketByKey(claveTicket);
       
       return {
         success: true,
@@ -92,19 +108,21 @@ export class TicketsController {
     }
   }
 
+  // === TICKETS GENERALES ===
+
   // Crear ticket general
   @Post('general')
   @HttpCode(HttpStatus.CREATED)
   async createGeneralTicket(
     @Body() createGeneralTicketDto: {
       motivo: string;
-      claveProfesor: string;
+      claveUsuario: string; // Usuario que crea el ticket
     }
   ) {
     this.logger.log('Creando nuevo ticket general');
     
     try {
-      const result = await this.ticketsService.createGeneralTicket(createGeneralTicketDto);
+      const result = await this.ticketsService.createGeneralTicketByUsuario(createGeneralTicketDto);
       
       return {
         success: true,
@@ -114,6 +132,44 @@ export class TicketsController {
       };
     } catch (error) {
       this.logger.error(`Error al crear ticket general: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  // Obtener ticket general por clave
+  @Get('general/:claveTicketGeneral')
+  async getGeneralTicket(@Param('claveTicketGeneral') claveTicketGeneral: string) {
+    this.logger.log(`Obteniendo ticket general: ${claveTicketGeneral}`);
+    
+    try {
+      const result = await this.ticketsService.getTicket(claveTicketGeneral);
+      
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        data: result,
+      };
+    } catch (error) {
+      this.logger.error(`Error al obtener ticket general: ${error.message}`, error.stack);
+      throw error;
+    }
+  }
+
+  // Obtener tickets generales por usuario
+  @Get('general/usuario/:claveUsuario')
+  async getGeneralTicketsByUsuario(@Param('claveUsuario') claveUsuario: string) {
+    this.logger.log(`Obteniendo tickets generales del usuario: ${claveUsuario}`);
+    
+    try {
+      const tickets = await this.ticketsService.getGeneralTicketsByUsuario(claveUsuario);
+      
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        data: tickets,
+      };
+    } catch (error) {
+      this.logger.error(`Error al obtener tickets generales: ${error.message}`, error.stack);
       throw error;
     }
   }

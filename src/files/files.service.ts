@@ -692,6 +692,33 @@ export class FilesService {
       return result.recordset[0]?.nombre || null;
     }
 
+  /**
+     * Obtener todos los documentos con filtros opcionales
+     * @param tipo: string (opcional) - filtrar por tipo de documento
+     */
+  async getAllDocuments(tipo?: string) {
+    const pool = this.mssql.getPool();
+    const request = pool.request();
+    
+    let query = `
+        SELECT 
+        ClaveDocumento AS claveDocumento,
+        Nombre AS nombre,
+        Tipo AS tipo
+        FROM Documento
+    `;
+    
+    if (tipo) {
+        query += ` WHERE Tipo = @Tipo`;
+        request.input('Tipo', tipo);
+    }
+    
+    query += ` ORDER BY ClaveDocumento`;
+    
+    const result = await request.query(query);
+    return result.recordset || [];
+  }
+
   // ========== MÉTODOS ESPECIFICOS POR DOCUMENTO ==========
   
   /**

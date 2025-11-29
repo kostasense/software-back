@@ -7,7 +7,8 @@ import {
   Logger,
   Body,
   Query,
-  BadRequestException
+  BadRequestException,
+  Get
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -64,6 +65,25 @@ export class FilesController {
     } catch (error) {
       this.logger.error(`Error al generar archivos: ${error.message}`, error.stack);
       throw error;
+    }
+  }
+
+  @Get('documents')
+  async getAllDocuments() {
+    this.logger.log('Obteniendo todos los documentos');
+    
+    try {
+        const documents = await this.filesService.getAllDocuments();
+        
+        return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        data: documents,
+        total: documents.length,
+        };
+    } catch (error) {
+        this.logger.error(`Error al obtener documentos: ${error.message}`, error.stack);
+        throw error;
     }
   }
 }

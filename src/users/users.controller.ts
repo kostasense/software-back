@@ -7,6 +7,7 @@ import {
   Request,
   UseGuards,
   HttpStatus,
+  Post,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -74,12 +75,30 @@ export class UsersController {
         message: 'Usuario no encontrado',
       };
     }
-
     return {
       success: true,
       statusCode: 200,
       message: 'Usuario actualizado exitosamente',
       data: result,
+    };
+  }
+
+  // Cambiar contraseña
+  @Post(':claveUsuario/change-password')
+  async changePassword(
+    @Param('claveUsuario') claveUsuario: string,
+    @Body() passwordDto: { oldPassword: string; newPassword: string },
+  ) {
+    const result = await this.usersService.changePassword(
+      claveUsuario,
+      passwordDto.oldPassword,
+      passwordDto.newPassword,
+    );
+    
+    return {
+      success: result,
+      statusCode: result ? HttpStatus.OK : HttpStatus.BAD_REQUEST,
+      message: result ? 'Contraseña actualizada exitosamente' : 'Contraseña actual incorrecta',
     };
   }
 }

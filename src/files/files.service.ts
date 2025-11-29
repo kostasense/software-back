@@ -76,163 +76,6 @@ export class FilesService {
     let documentos: FileInterfaces.GeneratedFile[] = [];
 
     const generation: Record<string, Generator> = {
-    
-      // ========== DOCUMENTOS 1-32 ==========
-      // DOC001: Horarios de asignaturas licenciatura
-      'DOC001': () => 
-      this.generateHorarioAsignaturasLic(base, claveDocente, claveDepartamento, año, 
-      { tipo: 'horarios', nivel: 'licenciatura' }),
-
-// DOC002: Constancia de asignaturas impartidas
-'DOC002': () => 
-  this.generateConstanciaAsignaturaImp(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia', nivel: 'licenciatura' }),
-
-// DOC003: Horarios de asignatura adicional
-'DOC003': () => 
-  this.generateHorarioAsignaturaAdi(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'horarios-adicionales', nivel: 'licenciatura' }),
-
-// DOC004: Constancia de séptima asignatura
-'DOC004': () => 
-  this.generateConstanciaSeptimaAsignatura(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia-adicionales', nivel: 'licenciatura' }),
-
-// DOC005: Horarios de asignaturas posgrado
-'DOC005': () => 
-  this.generateHorarioAsignaturaPos(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'horarios', nivel: 'posgrado' }),
-
-// DOC006: Constancia de asignaturas posgrado
-'DOC006': () => 
-  this.generateConstanciaAsignaturaPos(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia', nivel: 'posgrado' }),
-
-// DOC007: Constancia modalidades de atención
-'DOC007': () => 
-  this.generateModalidadesAtencion(base, claveDocente, claveDepartamento, año),
-
-// DOC008: Constancia de tutorías PIT
-'DOC008': () => 
-  this.generateTutorias(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'pit' }),
-
-// DOC009: Constancia de acreditación programa
-'DOC009': () => 
-  this.generateAcreditacionProgramas(base, claveDocente, claveDepartamento, año),
-
-// DOC010: Constancia actividades complementarias
-'DOC010': () => 
-  this.generateActividadesComplementarias(base, claveDocente, claveDepartamento, año),
-
-// DOC011: Constancia proyecto integrador
-'DOC011': () => 
-  this.generateProyectosIntegradores(base, claveDocente, claveDepartamento, año),
-
-// DOC012: Constancia manual de prácticas
-'DOC012': () => 
-  this.generateManualesPracticas(base, claveDocente, claveDepartamento, año),
-
-// DOC013: Constancia estrategias didácticas
-'DOC013': () => 
-  this.generateEstrategiasDidacticas(base, claveDocente, claveDepartamento, año),
-
-// DOC014: Constancia materiales didácticos inclusivos
-'DOC014': () => 
-  this.generateMaterialesInclusivos(base, claveDocente, claveDepartamento, año),
-
-// DOC015: Comisión instructor cursos docentes
-'DOC015': () => 
-  this.generateComCursosCapacitacionDocente(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'comision', destinatarios: 'docentes' }),
-
-// DOC016: Constancia curso impartido
-'DOC016': () => 
-  this.generateConstCursosCapacitacion(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia', destinatarios: 'general' }),
-
-// DOC017: Comisión instructor cursos TecNM
-'DOC017': () => 
-  this.generateComisionInstructor(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'comision', destinatarios: 'tecnm' }),
-
-// DOC018: Constancia realización curso TecNM
-'DOC018': () => 
-  this.generateConstanciaCursoTecnm(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia', destinatarios: 'tecnm' }),
-
-// DOC019: Comisión Diplomado Pensamiento Crítico
-'DOC019': () => 
-  this.generateComisionDiplomados(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'comision', nombre: 'pensamiento-critico' }),
-
-// DOC020: Constancia Diplomado Pensamiento Crítico
-'DOC020': () => 
-  this.generateConstanciaDiplomados(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia', nombre: 'pensamiento-critico' }),
-
-// DOC021: Constancia Diplomado Formación Tutores
-'DOC021': () => 
-  this.generateDiplomadosFormacion(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia', nombre: 'formacion-tutores' }),
-
-// DOC022: Comisión Diplomado Recursos Educativos
-'DOC022': () => 
-  this.generateComisionDiplomadosRecursos(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'comision', nombre: 'recursos-educativos' }),
-
-// DOC023: Constancia Diplomado Recursos Educativos
-'DOC023': () => 
-  this.generateConstanciaDiplomadosRecursos(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia', nombre: 'recursos-educativos' }),
-
-// DOC024: Comisión Diplomado Educación Inclusiva
-'DOC024': () => 
-  this.generateComisionDiplomadosEducacion(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'comision', nombre: 'educacion-inclusiva' }),
-
-// DOC025: Constancia Diplomado Educación Inclusiva
-'DOC025': () => 
-  this.generateConstanciaDiplomadosEducacion(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia', nombre: 'educacion-inclusiva' }),
-
-// DOC026: Comisión Diplomados estratégicos
-'DOC026': () => 
-  this.generateComisionDiplomadosEstrategico(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'comision', nombre: 'estrategicos' }),
-
-// DOC027: Constancia Diplomados estratégicos
-    'DOC027': () => 
-      this.generateConstanciaDiplomadosEstrategico(base, claveDocente, claveDepartamento, año, 
-      { tipo: 'constancia', nombre: 'estrategicos' }),
-
-    // DOC028: Acta examen profesional/grado
-    'DOC028': () => 
-    this.generateActasExamen(base, claveDocente, claveDepartamento, año),
-
-    // DOC029: Convenio colaboración académica
-      'DOC029': () => 
-         this.generateConveniosAcademicos(base, claveDocente, claveDepartamento, año),
-
-      // DOC030: Constancia sinodal titulación
-      'DOC030': () => 
-       this.generateSinodalesTitulacion(base, claveDocente, claveDepartamento, año),
-
-      // DOC031: Programa asesoría ciencias básicas
-      'DOC031': () => 
-       this.generateProgramaAsesoriasCiencias(base, claveDocente, claveDepartamento, año, 
-         { tipo: 'programa' }),
-
-      // DOC032: Constancia asesoría ciencias básicas
-      'DOC032': () => 
-        this.generateConstanciaAsesoriasCiencias(base, claveDocente, claveDepartamento, año, 
-        { tipo: 'constancia' }),
-
-       // ========== Primera parte terminada ==========
-  
-
-
-
       // DOC033: Comisión por asesoría en concursos
       'DOC033': () => 
         this.generateAsesoriaConcursos(base, claveDocente, claveDepartamento, año, 
@@ -389,8 +232,6 @@ export class FilesService {
     return expediente;
   }
  
-  
-
   /**
    * Obtener documentos por departamento
    * @param claveDepartamento string
@@ -1044,13 +885,13 @@ export class FilesService {
     claveDocente: string, 
     claveDepartamento: string,
     año: number,
-    option: {
+    options: {
       tipo: 'comision' | 'constancia'
       nivel: 'local' | 'nacional' | 'null'
     }
   ): Promise<FileInterfaces.DesarrolloCurricular[]> {
     let query = (
-      option.tipo === 'comision'
+      options.tipo === 'comision'
       ?  `SELECT 
             ep.FechaInicio AS fechaInicio,
             ep.FechaFin AS fechaFin
@@ -1073,7 +914,7 @@ export class FilesService {
       query,
       [{name: 'ClaveDocente', value: claveDocente},
        {name: 'Año', value: año},
-       {name: 'Nivel', value: option.nivel}]
+       {name: 'Nivel', value: options.nivel}]
     )
 
     return result.map(row => ({
@@ -1429,9 +1270,10 @@ export class FilesService {
 
   /**
    * DOC061, DOC062, DOC063: Evaluaciones
+   * @param base: DocumentInterfaces.Base
    * @param claveDocente: string
-   * @param año: number
    * @param claveDepartamento: string
+   * @param año: number
    */
   async generateEvaluaciones(
     base: FileInterfaces.Base,
@@ -1457,14 +1299,14 @@ export class FilesService {
           FROM EvaluacionDesempeño
           WHERE ClaveDocente = @ClaveDocente
             AND Año = @Año`
-    )
+    );
 
     const result = await this.dynamicDb.executeQueryByDepartmentId(
       claveDepartamento,
       query,
       [{name: 'ClaveDocente', value: claveDocente},
       {name: 'Año', value: año}]
-    )
+    );
 
     const subdireccion = await this.getDepartmentHeadById('DSUBD10');
 
@@ -1478,1309 +1320,776 @@ export class FilesService {
     }));
   }
 
-
-  // ========== MÉTODOS 1-32 ==========
-
-/**
- * DOC001: Horarios de asignaturas licenciatura
- */
-async generateHorarioAsignaturasLic(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; nivel: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      Semestre AS semestre,
-      STRING_AGG(CONCAT(a.NombreAsignatura, ' - ', ad.Horario), '; ') AS horarios
-    FROM Asignatura_Docente ad
-    INNER JOIN Asignatura a ON a.ClaveAsignatura = ad.ClaveAsignatura
-    WHERE ad.ClaveDocente = @ClaveDocente
-      AND ad.Año = @Año
-      AND a.Nivel = 'LICENCIATURA'
-    GROUP BY Semestre
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    semestre: row.semestre,
-    horarios: row.horarios
-  }));
-}
-
-/**
- * DOC002: Constancia de asignaturas impartidas
- */
-async generateConstanciaAsignaturaImp(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; nivel: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      ad.Semestre AS semestre,
-      a.Nivel AS nivel,
-      a.NombreAsignatura AS nombreAsignatura,
-      a.ClaveAsignatura AS claveAsignatura,
-      ad.EstudiantesAtendidos AS estudiantesAtendidos
-    FROM Asignatura_Docente ad
-    INNER JOIN Asignatura a ON a.ClaveAsignatura = ad.ClaveAsignatura
-    WHERE ad.ClaveDocente = @ClaveDocente
-      AND ad.Año = @Año
-      AND a.Nivel = 'LICENCIATURA'
-    ORDER BY ad.Semestre, a.NombreAsignatura
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    semestre: row.semestre,
-    nivel: row.nivel,
-    nombreAsignatura: row.nombreAsignatura,
-    claveAsignatura: row.claveAsignatura,
-    estudiantesAtendidos: row.estudiantesAtendidos
-  }));
-}
-
-/**
- * DOC003: Horarios de asignatura adicional
- */
-async generateHorarioAsignaturaAdi(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; nivel: string }
-): Promise<any[]> {
-  
-  const query = `
-    WITH AsignaturasPorSemestre AS (
-      SELECT 
-        Semestre,
-        a.NombreAsignatura,
-        ad.Horario,
-        ROW_NUMBER() OVER (PARTITION BY Semestre ORDER BY a.ClaveAsignatura) AS numeroAsignatura
-      FROM Asignatura_Docente ad
-      INNER JOIN Asignatura a ON a.ClaveAsignatura = ad.ClaveAsignatura
-      WHERE ad.ClaveDocente = @ClaveDocente
-        AND ad.Año = @Año
-    )
-    SELECT 
-      Semestre AS semestre,
-      STRING_AGG(CONCAT(NombreAsignatura, ' - ', Horario), '; ') AS horariosAdicionales
-    FROM AsignaturasPorSemestre
-    WHERE numeroAsignatura >= 7
-    GROUP BY Semestre
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    semestre: row.semestre,
-    horariosAdicionales: row.horariosAdicionales
-  }));
-}
-
-/**
- * DOC004: Constancia de séptima asignatura
- */
-async generateConstanciaSeptimaAsignatura(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; nivel: string }
-): Promise<any[]> {
-  
-  const query = `
-    WITH AsignaturasNumeradas AS (
-      SELECT 
-        ad.Semestre,
-        a.Nivel,
-        a.NombreAsignatura,
-        a.ClaveAsignatura,
-        ad.EstudiantesAtendidos,
-        ROW_NUMBER() OVER (PARTITION BY ad.Semestre ORDER BY a.ClaveAsignatura) AS numeroAsignatura
-      FROM Asignatura_Docente ad
-      INNER JOIN Asignatura a ON a.ClaveAsignatura = ad.ClaveAsignatura
-      WHERE ad.ClaveDocente = @ClaveDocente
-        AND ad.Año = @Año
-    )
-    SELECT 
-      Semestre AS semestre,
-      Nivel AS nivel,
-      NombreAsignatura AS nombreAsignatura,
-      ClaveAsignatura AS claveAsignatura,
-      EstudiantesAtendidos AS estudiantesAtendidos
-    FROM AsignaturasNumeradas
-    WHERE numeroAsignatura >= 7
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    semestre: row.semestre,
-    nivel: row.nivel,
-    nombreAsignatura: row.nombreAsignatura,
-    claveAsignatura: row.claveAsignatura,
-    estudiantesAtendidos: row.estudiantesAtendidos
-  }));
-}
-
-/**
- * DOC005: Horarios de asignaturas posgrado
- */
-async generateHorarioAsignaturaPos(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; nivel: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      Semestre AS semestre,
-      STRING_AGG(CONCAT(a.NombreAsignatura, ' - ', ad.Horario), '; ') AS horarios
-    FROM Asignatura_Docente ad
-    INNER JOIN Asignatura a ON a.ClaveAsignatura = ad.ClaveAsignatura
-    WHERE ad.ClaveDocente = @ClaveDocente
-      AND ad.Año = @Año
-      AND a.Nivel = 'POSGRADO'
-    GROUP BY Semestre
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    semestre: row.semestre,
-    horarios: row.horarios
-  }));
-}
-
-/**
- * DOC006: Constancia de asignaturas posgrado
- */
-async generateConstanciaAsignaturaPos(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; nivel: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      ad.Semestre AS semestre,
-      a.NombreAsignatura AS nombreAsignatura,
-      a.Tipo AS tipoAsignatura,
-      a.ClaveAsignatura AS claveAsignatura,
-      ad.EstudiantesAtendidos AS estudiantesAtendidos
-    FROM Asignatura_Docente ad
-    INNER JOIN Asignatura a ON a.ClaveAsignatura = ad.ClaveAsignatura
-    WHERE ad.ClaveDocente = @ClaveDocente
-      AND ad.Año = @Año
-      AND a.Nivel = 'POSGRADO'
-    ORDER BY ad.Semestre, a.NombreAsignatura
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    semestre: row.semestre,
-    nombreAsignatura: row.nombreAsignatura,
-    tipoAsignatura: row.tipoAsignatura,
-    claveAsignatura: row.claveAsignatura,
-    estudiantesAtendidos: row.estudiantesAtendidos
-  }));
-}
-
-/**
- * DOC007: Constancia modalidades de atención
- */
-async generateModalidadesAtencion(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      ad.Semestre AS semestre,
-      a.Nivel AS nivel,
-      a.NombreAsignatura AS nombreAsignatura,
-      a.ClaveAsignatura AS claveAsignatura,
-      ad.EstudiantesEscolarizada AS estudiantesEscolarizada,
-      ad.EstudiantesNoEscolarizada AS estudiantesNoEscolarizada,
-      ad.EstudiantesMixta AS estudiantesMixta
-    FROM Asignatura_Docente ad
-    INNER JOIN Asignatura a ON a.ClaveAsignatura = ad.ClaveAsignatura
-    WHERE ad.ClaveDocente = @ClaveDocente
-      AND ad.Año = @Año
-    ORDER BY ad.Semestre, a.NombreAsignatura
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    semestre: row.semestre,
-    nivel: row.nivel,
-    nombreAsignatura: row.nombreAsignatura,
-    claveAsignatura: row.claveAsignatura,
-    estudiantesEscolarizada: row.estudiantesEscolarizada,
-    estudiantesNoEscolarizada: row.estudiantesNoEscolarizada,
-    estudiantesMixta: row.estudiantesMixta
-  }));
-
-  }
   /**
- * DOC008: Constancia de tutorías PIT
- */
-async generateTutorias(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      Semestre AS semestre,
-      COUNT(DISTINCT ClaveEstudiante) AS estudiantesAtendidos
-    FROM Tutorias
-    WHERE ClaveDocente = @ClaveDocente
-      AND Año = @Año
-      AND Programa = 'PIT'
-    GROUP BY Semestre
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    semestre: row.semestre,
-    estudiantesAtendidos: row.estudiantesAtendidos
-  }));
-}
-
-/**
- * DOC009: Constancia de acreditación programa
- */
-async generateAcreditacionProgramas(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number
-): Promise<any[]> {
-  
-  const query = `
-    SELECT DISTINCT
-      p.NombrePrograma AS nombrePrograma,
-      pa.OrganismoAcreditador AS organismoAcreditador,
-      pa.FechaAcreditacion AS fechaAcreditacion,
-      pa.FechaVigencia AS fechaVigencia,
-      pa.NumeroRegistroSNP AS numeroRegistroSNP
-    FROM ProgramaAcreditado pa
-    INNER JOIN Programa p ON p.ClavePrograma = pa.ClavePrograma
-    INNER JOIN Asignatura_Docente ad ON ad.ClavePrograma = p.ClavePrograma
-    WHERE ad.ClaveDocente = @ClaveDocente
+   * DOC001, DOC003, DOC005: Horarios de asignaturas
+   * @param base: DocumentInterfaces.Base
+   * @param claveDocente: string
+   * @param claveDepartamento: string
+   * @param año: number
+   */
+  async generateHorariosAsignaturas(
+    base: FileInterfaces.Base,
+    claveDocente: string,
+    claveDepartamento: string,
+    año: number
+  ): Promise<FileInterfaces.Horarios[]> {
+    const query = `
+      SELECT 
+        a.Nombre AS asignatura,
+        a.ClaveAsignatura AS claveAsignatura,
+        ad.ClaveGrupo AS claveGrupo,
+        g.TotalAlumnos AS totalAlumnos,
+        ad.Aula AS aula,
+        a.Nivel AS nivel,
+        g.Modalidad AS modalidad,
+        g.Horario AS horario,
+        CASE
+            WHEN g.Horario LIKE '%LUN-VIE%' THEN 5
+            WHEN g.Horario LIKE '%LUN-JUE%' THEN 4
+            WHEN g.Horario LIKE '%LUN-MIER%' THEN 3
+        END AS horasSemana
+      FROM Asignatura_Docente ad
+      INNER JOIN Grupo g 
+        ON ad.ClaveGrupo = g.ClaveGrupo
+        AND ad.Año = g.Año 
+        AND ad.Semestre = g.Semestre
+      INNER JOIN Asignatura a ON ad.ClaveAsignatura = a.ClaveAsignatura
+      WHERE ad.ClaveDocente = @ClaveDocente
       AND ad.Año = @Año
-      AND pa.Estatus = 'VIGENTE'
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombrePrograma: row.nombrePrograma,
-    organismoAcreditador: row.organismoAcreditador,
-    fechaAcreditacion: row.fechaAcreditacion,
-    fechaVigencia: row.fechaVigencia,
-    numeroRegistroSNP: row.numeroRegistroSNP
-  }));
-}
-
-/**
- * DOC010: Constancia actividades complementarias
- */
-async generateActividadesComplementarias(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      ac.NombreActividad AS nombreActividad,
-      ac.NumeroDictamen AS numeroDictamen,
-      ac.Creditos AS creditos,
-      ac.EstudiantesAtendidos AS estudiantesAtendidos
-    FROM ActividadComplementaria ac
-    WHERE ac.ClaveDocente = @ClaveDocente
-      AND ac.Año = @Año
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreActividad: row.nombreActividad,
-    numeroDictamen: row.numeroDictamen,
-    creditos: row.creditos,
-    estudiantesAtendidos: row.estudiantesAtendidos
-  }));
-}
-
-/**
- * DOC011: Constancia proyecto integrador
- */
-async generateProyectosIntegradores(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      pi.NombreProyecto AS nombreProyecto,
-      STRING_AGG(a.NombreAsignatura, ', ') AS asignaturasIntegradas
-    FROM ProyectoIntegrador pi
-    INNER JOIN ProyectoIntegrador_Asignatura pia ON pia.ClaveProyecto = pi.ClaveProyecto
-    INNER JOIN Asignatura a ON a.ClaveAsignatura = pia.ClaveAsignatura
-    WHERE pi.ClaveDocente = @ClaveDocente
-      AND pi.Año = @Año
-    GROUP BY pi.NombreProyecto
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreProyecto: row.nombreProyecto,
-    asignaturasIntegradas: row.asignaturasIntegradas
-  }));
-}
-
-/**
- * DOC012: Constancia manual de prácticas
- */
-async generateManualesPracticas(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      mp.NombreManual AS nombreManual,
-      mp.FechaElaboracion AS fechaElaboracion,
-      mp.Estatus AS estatus
-    FROM ManualPracticas mp
-    WHERE mp.ClaveDocente = @ClaveDocente
-      AND YEAR(mp.FechaElaboracion) = @Año
-      AND mp.Estatus = 'EN_USO'
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreManual: row.nombreManual,
-    fechaElaboracion: row.fechaElaboracion,
-    estatus: row.estatus
-  }));
-}
-
-/**
- * DOC013: Constancia estrategias didácticas
- */
-async generateEstrategiasDidacticas(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      ed.NombreAsignatura AS nombreAsignatura,
-      ed.ProductosObtenidos AS productosObtenidos,
-      ed.ImpactoExperiencias AS impactoExperiencias
-    FROM EstrategiaDidactica ed
-    WHERE ed.ClaveDocente = @ClaveDocente
-      AND ed.Año = @Año
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreAsignatura: row.nombreAsignatura,
-    productosObtenidos: row.productosObtenidos,
-    impactoExperiencias: row.impactoExperiencias
-  }));
-}
-
-/**
- * DOC014: Constancia materiales didácticos inclusivos
- */
-async generateMaterialesInclusivos(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      mdi.Enfoque AS enfoque,
-      mdi.ProductosObtenidos AS productosObtenidos,
-      mdi.ImpactoExperiencias AS impactoExperiencias
-    FROM MaterialDidacticoInclusivo mdi
-    WHERE mdi.ClaveDocente = @ClaveDocente
-      AND mdi.Año = @Año
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    enfoque: row.enfoque,
-    productosObtenidos: row.productosObtenidos,
-    impactoExperiencias: row.impactoExperiencias
-  }));
-}
-
-/**
- * DOC015: Comisión instructor cursos docentes
- */
-async generateComCursosCapacitacionDocente(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; destinatarios: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      c.NombreCurso AS nombreCurso,
-      c.TipoCurso AS tipoCurso,
-      c.HorasDuracion AS horasDuracion,
-      c.FechaInicio AS fechaInicio,
-      c.FechaFin AS fechaFin
-    FROM ComisionCurso c
-    WHERE c.ClaveDocente = @ClaveDocente
-      AND YEAR(c.FechaInicio) = @Año
-      AND c.Destinatarios = 'DOCENTES_TECNM'
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreCurso: row.nombreCurso,
-    tipoCurso: row.tipoCurso,
-    horasDuracion: row.horasDuracion,
-    fechaInicio: row.fechaInicio,
-    fechaFin: row.fechaFin
-  }));
-}
-
-/**
- * DOC016: Constancia curso impartido
- */
-async generateConstCursosCapacitacion(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; destinatarios: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      ci.NombreCurso AS nombreCurso,
-      ci.NumeroRegistro AS numeroRegistro,
-      ci.FechaInicio AS fechaInicio,
-      ci.FechaFin AS fechaFin,
-      ci.HorasDuracion AS horasDuracion
-    FROM CursoImpartido ci
-    WHERE ci.ClaveDocente = @ClaveDocente
-      AND YEAR(ci.FechaInicio) = @Año
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreCurso: row.nombreCurso,
-    numeroRegistro: row.numeroRegistro,
-    fechaInicio: row.fechaInicio,
-    fechaFin: row.fechaFin,
-    horasDuracion: row.horasDuracion
-  }));
-}
-
-/**
- * DOC017: Comisión instructor cursos TecNM
- */
-async generateComisionInstructor(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; destinatarios: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      c.NombreCurso AS nombreCurso,
-      c.HorasDuracion AS horasDuracion,
-      c.FechaInicio AS fechaInicio,
-      c.FechaFin AS fechaFin
-    FROM ComisionCurso c
-    WHERE c.ClaveDocente = @ClaveDocente
-      AND YEAR(c.FechaInicio) = @Año
-      AND c.Programa = 'FORMACION_DOCENTE_TECNM'
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreCurso: row.nombreCurso,
-    horasDuracion: row.horasDuracion,
-    fechaInicio: row.fechaInicio,
-    fechaFin: row.fechaFin
-  }));
-}
-
-/**
- * DOC018: Constancia realización curso TecNM
- */
-async generateConstanciaCursoTecnm(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; destinatarios: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      c.NombreCurso AS nombreCurso,
-      c.HorasDuracion AS horasDuracion,
-      c.ProfesoresBeneficiados AS profesoresBeneficiados
-    FROM CursoTecNM c
-    WHERE c.ClaveDocente = @ClaveDocente
-      AND c.Año = @Año
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreCurso: row.nombreCurso,
-    horasDuracion: row.horasDuracion,
-    profesoresBeneficiados: row.profesoresBeneficiados
-  }));
-}
-
-/**
- * DOC019: Comisión Diplomado Pensamiento Crítico
- */
-async generateComisionDiplomados(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; nombre: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      d.NombreDiplomado AS nombreDiplomado,
-      d.FechaInicio AS fechaInicio,
-      d.FechaFin AS fechaFin
-    FROM ComisionDiplomado d
-    WHERE d.ClaveDocente = @ClaveDocente
-      AND YEAR(d.FechaInicio) = @Año
-      AND d.NombreDiplomado LIKE '%Pensamiento Crítico%'
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreDiplomado: row.nombreDiplomado,
-    fechaInicio: row.fechaInicio,
-    fechaFin: row.fechaFin
-  }));
-}
-
-/**
- * DOC020: Constancia Diplomado Pensamiento Crítico
- */
-async generateConstanciaDiplomados(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; nombre: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      d.NombreModulo AS nombreModulo,
-      d.HorasImpartidas AS horasImpartidas
-    FROM DiplomadoImpartido d
-    WHERE d.ClaveDocente = @ClaveDocente
-      AND d.Año = @Año
-      AND d.NombreDiplomado LIKE '%Pensamiento Crítico%'
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreModulo: row.nombreModulo,
-    horasImpartidas: row.horasImpartidas
-  }));
-}
-
-/**
- * DOC021: Constancia Diplomado Formación Tutores
- */
-async generateDiplomadosFormacion(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; nombre: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      d.NombreModulo AS nombreModulo,
-      d.HorasImpartidas AS horasImpartidas
-    FROM DiplomadoImpartido d
-    WHERE d.ClaveDocente = @ClaveDocente
-      AND d.Año = @Año
-      AND d.NombreDiplomado LIKE '%Formación de Tutores%'
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreModulo: row.nombreModulo,
-    horasImpartidas: row.horasImpartidas
-  }));
-}
-
-/**
- * DOC022: Comisión Diplomado Recursos Educativos
- */
-async generateComisionDiplomadosRecursos(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; nombre: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      d.NombreDiplomado AS nombreDiplomado,
-      d.FechaInicio AS fechaInicio,
-      d.FechaFin AS fechaFin
-    FROM ComisionDiplomado d
-    WHERE d.ClaveDocente = @ClaveDocente
-      AND YEAR(d.FechaInicio) = @Año
-      AND d.NombreDiplomado LIKE '%Recursos Educativos%'
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreDiplomado: row.nombreDiplomado,
-    fechaInicio: row.fechaInicio,
-    fechaFin: row.fechaFin
-  }));
-}
-
-/**
- * DOC023: Constancia Diplomado Recursos Educativos
- */
-async generateConstanciaDiplomadosRecursos(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; nombre: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      d.NombreModulo AS nombreModulo,
-      d.HorasImpartidas AS horasImpartidas
-    FROM DiplomadoImpartido d
-    WHERE d.ClaveDocente = @ClaveDocente
-      AND d.Año = @Año
-      AND d.NombreDiplomado LIKE '%Recursos Educativos%'
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreModulo: row.nombreModulo,
-    horasImpartidas: row.horasImpartidas
-  }));
-}
-
-/**
- * DOC024: Comisión Diplomado Educación Inclusiva
- */
-async generateComisionDiplomadosEducacion(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; nombre: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      d.NombreDiplomado AS nombreDiplomado,
-      d.FechaInicio AS fechaInicio,
-      d.FechaFin AS fechaFin
-    FROM ComisionDiplomado d
-    WHERE d.ClaveDocente = @ClaveDocente
-      AND YEAR(d.FechaInicio) = @Año
-      AND d.NombreDiplomado LIKE '%Educación Inclusiva%'
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreDiplomado: row.nombreDiplomado,
-    fechaInicio: row.fechaInicio,
-    fechaFin: row.fechaFin
-  }));
-}
-
-/**
- * DOC025: Constancia Diplomado Educación Inclusiva
- */
-async generateConstanciaDiplomadosEducacion(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; nombre: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      d.NombreModulo AS nombreModulo,
-      d.HorasImpartidas AS horasImpartidas
-    FROM DiplomadoImpartido d
-    WHERE d.ClaveDocente = @ClaveDocente
-      AND d.Año = @Año
-      AND d.NombreDiplomado LIKE '%Educación Inclusiva%'
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreModulo: row.nombreModulo,
-    horasImpartidas: row.horasImpartidas
-  }));
-}
-
-/**
- * DOC026: Comisión Diplomados estratégicos
- */
-async generateComisionDiplomadosEstrategico(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; nombre: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      d.NombreDiplomado AS nombreDiplomado,
-      d.ProyectoEstrategico AS proyectoEstrategico,
-      d.FechaInicio AS fechaInicio,
-      d.FechaFin AS fechaFin
-    FROM ComisionDiplomado d
-    WHERE d.ClaveDocente = @ClaveDocente
-      AND YEAR(d.FechaInicio) = @Año
-      AND d.ProyectoEstrategico IS NOT NULL
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreDiplomado: row.nombreDiplomado,
-    proyectoEstrategico: row.proyectoEstrategico,
-    fechaInicio: row.fechaInicio,
-    fechaFin: row.fechaFin
-  }));
-}
-
-/**
- * DOC027: Constancia Diplomados estratégicos
- */
-async generateConstanciaDiplomadosEstrategico(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string; nombre: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      d.NombreDiplomado AS nombreDiplomado,
-      d.ProyectoEstrategico AS proyectoEstrategico,
-      d.HorasImpartidas AS horasImpartidas
-    FROM DiplomadoImpartido d
-    WHERE d.ClaveDocente = @ClaveDocente
-      AND d.Año = @Año
-      AND d.ProyectoEstrategico IS NOT NULL
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreDiplomado: row.nombreDiplomado,
-    proyectoEstrategico: row.proyectoEstrategico,
-    horasImpartidas: row.horasImpartidas
-  }));
-}
-
-/**
- * DOC028: Acta examen profesional/grado
- */
-async generateActasExamen(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      ae.Fecha AS fecha,
-      ae.NombreEstudiante AS nombreEstudiante,
-      ae.Programa AS programa,
-      ae.Funcion AS funcion,
-      ae.NumeroActa AS numeroActa
-    FROM ActaExamen ae
-    WHERE ae.ClaveDocente = @ClaveDocente
-      AND YEAR(ae.Fecha) = @Año
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    fecha: row.fecha,
-    nombreEstudiante: row.nombreEstudiante,
-    programa: row.programa,
-    funcion: row.funcion,
-    numeroActa: row.numeroActa
-  }));
-}
-
-/**
- * DOC029: Convenio colaboración académica
- */
-async generateConveniosAcademicos(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      ca.Institucion1 AS institucion1,
-      ca.Institucion2 AS institucion2,
-      ca.TipoColaboracion AS tipoColaboracion,
-      ca.Funcion AS funcion,
-      ca.Proyecto AS proyecto,
-      ca.FechaFirma AS fechaFirma
-    FROM ConvenioAcademico ca
-    WHERE ca.ClaveDocente = @ClaveDocente
-      AND YEAR(ca.FechaFirma) = @Año
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    institucion1: row.institucion1,
-    institucion2: row.institucion2,
-    tipoColaboracion: row.tipoColaboracion,
-    funcion: row.funcion,
-    proyecto: row.proyecto,
-    fechaFirma: row.fechaFirma
-  }));
-}
-
-/**
- * DOC030: Constancia sinodal titulación
- */
-async generateSinodalesTitulacion(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      st.NombreEstudiante AS nombreEstudiante,
-      st.Programa AS programa,
-      st.FolioActa AS folioActa,
-      st.FechaExamen AS fechaExamen,
-      st.TipoExamen AS tipoExamen
-    FROM SinodalTitulacion st
-    WHERE st.ClaveDocente = @ClaveDocente
-      AND YEAR(st.FechaExamen) = @Año
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    nombreEstudiante: row.nombreEstudiante,
-    programa: row.programa,
-    folioActa: row.folioActa,
-    fechaExamen: row.fechaExamen,
-    tipoExamen: row.tipoExamen
-  }));
-}
-
-/**
- * DOC031: Programa asesoría ciencias básicas
- */
-async generateProgramaAsesoriasCiencias(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      pa.Horarios AS horarios,
-      STRING_AGG(a.NombreAsignatura, ', ') AS asignaturas,
-      pa.Modalidad AS modalidad
-    FROM ProgramaAsesoria pa
-    INNER JOIN Asesoria_Asignatura aa ON aa.ClavePrograma = pa.ClavePrograma
-    INNER JOIN Asignatura a ON a.ClaveAsignatura = aa.ClaveAsignatura
-    WHERE pa.ClaveDocente = @ClaveDocente
-      AND pa.Año = @Año
-    GROUP BY pa.Horarios, pa.Modalidad
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    horarios: row.horarios,
-    asignaturas: row.asignaturas,
-    modalidad: row.modalidad
-  }));
-}
-
-/**
- * DOC032: Constancia asesoría ciencias básicas
- */
-async generateConstanciaAsesoriasCiencias(
-  base: FileInterfaces.Base,
-  claveDocente: string,
-  claveDepartamento: string,
-  año: number,
-  config: { tipo: string }
-): Promise<any[]> {
-  
-  const query = `
-    SELECT 
-      pa.Periodo AS periodo,
-      pa.EstudiantesAtendidos AS estudiantesAtendidos,
-      pa.TotalHoras AS totalHoras
-    FROM ProgramaAsesoria pa
-    WHERE pa.ClaveDocente = @ClaveDocente
-      AND pa.Año = @Año
-  `;
-
-  const result = await this.dynamicDb.executeQueryByDepartmentId(
-    claveDepartamento,
-    query,
-    [
-      { name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año }
-    ]
-  );
-
-  return result.map(row => ({
-    ...base,
-    periodo: row.periodo,
-    estudiantesAtendidos: row.estudiantesAtendidos,
-    totalHoras: row.totalHoras
-  }));
-
-
-}
-
+      AND ad.Semestre = @Semestre
+    `;
+
+    const periodos = [
+      {año: año, semestre: 'ENERO-JUNIO'},
+      {año: año, semestre: 'AGOSTO-DICIEMBRE'},
+      {año: año + 1, semestre: 'ENERO-JUNIO'}
+    ];
+
+    const results: FileInterfaces.Horarios[] = [];
+
+    for (const periodo of periodos) {
+      let asignaturas: FileInterfaces.AsignaturaDetalle[] = [];
+      let totalHoras = 0;
+
+      const r = await this.dynamicDb.executeQueryByDepartmentId(
+        claveDepartamento,
+        query,
+        [{ name: 'ClaveDocente', value: claveDocente },
+         { name: 'Año', value: periodo.año },
+         { name: 'Semestre', value: periodo.semestre }]
+      );
+
+      r.forEach(row => {
+        asignaturas.push({
+          nombre: row.asignatura,
+          clave: row.claveAsignatura,
+          grupo: row.claveGrupo,
+          estudiantes: row.totalAlumnos,
+          aula: row.aula,
+          nivel: row.nivel,
+          modalidad: row.modalidad,
+          horario: row.horario,
+          horas: row.horasSemana
+        })
+        totalHoras += row.horasSemana;
+      });
+
+      results.push({
+        ...base,
+        periodo: `${periodo.semestre} ${periodo.año}`,
+        asignaturas,
+        totalHoras
+      })
+    }
+
+    return results;
   }
+
+  /**
+   * DOC002, DOC004, DOCOO6: Constancias de asignaturas
+   * @param base: DocumentInterfaces.Base
+   * @param claveDocente: string
+   * @param claveDepartamento: string
+   * @param año: number
+   */
+  async generateConstanciaAsignaturaImp(
+    base: FileInterfaces.Base,
+    claveDocente: string,
+    claveDepartamento: string,
+    año: number,
+  ): Promise<FileInterfaces.ConstanciaAsignaturas[]> {    
+    const query = `
+      SELECT 
+          ea.ClaveExpediente AS expediente,
+          CONCAT(ea.Semestre, ' ', ea.Año) AS periodo,
+          a.Nivel AS nivel,
+          a.ClaveAsignatura AS claveAsignatura,
+          a.Nombre AS asignatura,
+          g.TotalAlumnos AS totalAlumnos
+      FROM ExpedienteAsignatura ea
+      INNER JOIN Asignatura a ON ea.ClaveAsignatura = a.ClaveAsignatura
+      INNER JOIN Grupo g 
+          ON ea.ClaveGrupo = g.ClaveGrupo
+          AND ea.Año = g.Año 
+          AND ea.Semestre = g.Semestre
+      WHERE ea.ClaveDocente = @ClaveDocente
+          AND ea.Año = @Año
+      ORDER BY ea.Semestre DESC
+    `;
+
+    const result = await this.dynamicDb.executeQueryByDepartmentId(
+      claveDepartamento,
+      query,
+      [{ name: 'ClaveDocente', value: claveDocente },
+      { name: 'Año', value: año }]
+    );
+
+    let asignaturas: FileInterfaces.AsignaturaDetalle[] = [];
+    let totalAlumnos = 0;
+
+    result.forEach(row => {
+      asignaturas.push({
+        periodo: row.periodo,
+        nivel: row.nivel,
+        clave: row.claveAsignatura,
+        nombre: row.asignatura,
+        estudiantes: row.totalAlumnos
+      });
+
+      totalAlumnos += row.totalAlumnos;
+    });
+
+    return [{
+      ...base,
+      año: año,
+      asignaturas,
+      totalAlumnos
+    }];
+  }
+
+  /**
+   * DOC008: Constancia de tutorías PIT
+   */
+  async generateTutorias(
+    base: FileInterfaces.Base,
+    claveDocente: string,
+    claveDepartamento: string,
+    año: number,
+  ): Promise<FileInterfaces.Tutorias[]> {
+    const query = `
+      SELECT 
+        CONCAT(t.Semestre, ' ', t.Año) AS periodo,
+        SUM(g.TotalAlumnos) AS tutorados,
+        g.Carrera AS carrera
+      FROM Tutoria t
+      INNER JOIN Grupo g ON t.ClaveGrupo = g.ClaveGrupo
+      WHERE t.ClaveDocente = @ClaveDocente
+        AND t.Año = @Año
+      GROUP BY t.Semestre, t.Año, g.Carrera
+      ORDER BY t.Semestre DESC
+    `
+
+    const result = await this.dynamicDb.executeQueryByDepartmentId(
+      claveDepartamento,
+      query,
+      [{ name: 'ClaveDocente', value: claveDocente },
+       { name: 'Año', value: año }]
+    );
+
+    let tutorias: FileInterfaces.TutoriasDetalle[] = [];
+    let total = 0;
+
+    result.forEach(row => {
+      tutorias.push({
+        periodo: row.periodo,
+        carrera: row.carrera,
+        tutorados: row.tutorados
+      });
+      total += row.tutorados;
+    });
+
+    const subdireccion = await this.getDepartmentHeadById('DSUBD10');
+
+    return [{
+      ...base,
+      tutorias: tutorias,
+      totalTutorados: total,
+      subdireccion: subdireccion || null
+    }]
+  }
+
+  /**
+   * DOC009: Constancia de acreditación de programas
+   * @param base: DocumentInterfaces.Base
+   * @param claveDocente: string
+   * @param claveDepartamento: string
+   */
+  async generateAcreditacionProgramas(
+    base: FileInterfaces.Base,
+    claveDocente: string,
+    claveDepartamento: string
+  ): Promise<FileInterfaces.AcreditacionPrograma[]> {
+    const query = `
+      SELECT 
+          SNP AS snp,
+          FechaAcreditacion AS fechaAcreditacion,
+          FechaVigencia AS fechaVigencia,
+          OrganoAcreditador AS organoAcreditador,
+          ProgramaEducativo AS programaEducativo
+      FROM AcreditacionPrograma
+      WHERE ClaveDocente = @ClaveDocente
+          AND FechaVigencia >= GETDATE()
+    `;
+
+    const result = await this.dynamicDb.executeQueryByDepartmentId(
+      claveDepartamento,
+      query,
+      [{ name: 'ClaveDocente', value: claveDocente }]
+    );
+
+    const subdireccion = await this.getDepartmentHeadById('DSUBD10');
+
+    return result.map(row => ({
+      ...base,
+      snp: row.snp,
+      fechaAcreditacion: row.fechaAcreditacion,
+      fechaVencimiento: row.fechaVigencia,
+      organismoAcreditador: row.organoAcreditador,
+      nombrePrograma: row.programaEducativo,
+      subdireccion: subdireccion || null
+    }));
+  }
+
+  /**
+   * DOC010: Constancia de actividades complementarias
+   * @param base: DocumentInterfaces.Base
+   * @param claveDocente: string
+   * @param claveDepartamento: string
+   * @param año: number
+   */
+  async generateActividadesComplementarias(
+    base: FileInterfaces.Base,
+    claveDocente: string,
+    claveDepartamento: string,
+    año: number
+  ): Promise<FileInterfaces.ActividadesComplementarias[]> {
+    const query = `
+      SELECT
+          dc.NumeroDictamen AS dictamen,
+          ac.Nombre AS nombre,
+          dc.Creditos AS creditos,
+          g.TotalAlumnos AS totalAlumnos
+      FROM ActividadComplementaria ac
+      INNER JOIN Docente_Complementaria dc ON ac.ClaveActividadComplementaria = dc.ClaveActividadComplementaria
+      INNER JOIN Grupo g 
+          ON dc.ClaveGrupo = g.ClaveGrupo
+          AND dc.Año = g.Año
+          AND dc.Semestre = g.Semestre
+      WHERE dc.ClaveDocente = @ClaveDocente
+        AND dc.Año = @Año
+    `;
+
+    const result = await this.dynamicDb.executeQueryByDepartmentId(
+      claveDepartamento,
+      query,
+      [{ name: 'ClaveDocente', value: claveDocente },
+       { name: 'Año', value: año }]
+    );
+
+    const subdireccion = await this.getDepartmentHeadById('DSUBD10');
+
+    return result.map(row => ({
+      ...base,
+      nombreActividad: row.nombre,
+      dictamen: row.dictamen,
+      creditos: row.creditos,
+      estudiantes: row.totalAlumnos,
+      subdireccion: subdireccion || null
+    }));
+  }
+
+  /**
+   * DOC011: Constancia proyecto integrador
+   * @param base: DocumentInterfaces.Base
+   * @param claveDocente: string
+   * @param claveDepartamento: string
+   * @param año: number
+   */
+  async generateProyectoIntegrador(
+    base: FileInterfaces.Base,
+    claveDocente: string,
+    claveDepartamento: string,
+    año: number
+  ): Promise<FileInterfaces.ProyectoIntegrador[]> {
+    const query = `
+      SELECT 
+          pi.Nombre AS nombreProyecto,
+          STRING_AGG(a.Nombre, ', ') AS asignaturas
+      FROM ProyectoIntegrador pi
+      INNER JOIN ProyectoIntegrador_Asignatura pia ON pia.ClaveProyecto = pi.ClaveProyecto
+      INNER JOIN Asignatura a ON a.ClaveAsignatura = pia.ClaveAsignatura
+      WHERE pi.ClaveDocente = @ClaveDocente
+          AND pi.Año = @Año
+      GROUP BY pi.Nombre
+    `;
+
+    const result = await this.dynamicDb.executeQueryByDepartmentId(
+      claveDepartamento,
+      query,
+      [{ name: 'ClaveDocente', value: claveDocente },
+       { name: 'Año', value: año }]
+    );
+
+    const subdireccion = await this.getDepartmentHeadById('DSUBD10');
+
+    return result.map(row => ({
+      ...base,
+      nombreProyecto: row.nombreProyecto,
+      asignaturas: row.asignaturas
+    }));
+  }
+
+  /**
+   * DOC012, DOC013, DOC014: Manuales y materiales didácticos
+   * @param base: DocumentInterfaces.Base
+   * @param claveDocente: string
+   * @param claveDepartamento: string
+   * @param año: number
+   */
+  async generateConstanciasElaboracionMaterial(
+    base: FileInterfaces.Base,
+    claveDocente: string,
+    claveDepartamento: string,
+    año: number,
+    tipo: 'manual' | 'estrategias' | 'materiales'
+  ): Promise<FileInterfaces.ElaboracionMaterial[]> {
+    let query = (
+      tipo === 'manual'
+      ? `SELECT DISTINCT 
+            Nombre AS nombre
+        FROM ManualPractica
+        WHERE ClaveDocente = @ClaveDocente
+            AND Año = @Año
+            AND Estado = 1`
+
+      : tipo === 'estrategias'
+          ? `SELECT 
+                a.Nombre AS asignatura,
+                ie.DescripcionImpacto AS descripcionImpacto,
+                STRING_AGG(pe.NombreProducto, ', ') AS productos
+            FROM ImplementacionEstrategia ie
+            INNER JOIN Asignatura a ON ie.ClaveAsignatura = a.ClaveAsignatura
+            INNER JOIN Producto_Estrategia pe 
+                ON ie.Año = pe.Año
+                AND ie.Semestre = pe.Semestre
+                AND ie.ClaveDocente = pe.ClaveDocente
+                AND ie.ClaveAsignatura = pe.ClaveAsignatura
+            WHERE ie.ClaveDocente = @ClaveDocente
+                AND ie.Año = @Año
+            GROUP BY a.Nombre, ie.DescripcionImpacto`
+
+          : `SELECT DISTINCT
+                md.Enfoque AS enfoque,
+                md.DescripcionImpacto AS descripcionImpacto,
+                STRING_AGG(pm.NombreProducto, ', ') AS productos
+            FROM MaterialDidactico md
+            INNER JOIN Producto_MaterialDidactico pm 
+                ON md.Año = pm.Año
+                AND md.Semestre = pm.Semestre
+                AND md.ClaveMaterial = pm.ClaveMaterial
+            WHERE md.ClaveDocente = @ClaveDocente
+                AND md.Año = @Año
+            GROUP BY md.Enfoque, md.DescripcionImpacto`
+    );
+
+    const result = await this.dynamicDb.executeQueryByDepartmentId(
+      claveDepartamento,
+      query,
+      [{ name: 'ClaveDocente', value: claveDocente },
+       { name: 'Año', value: año }]
+    );
+
+    const subdireccion = await this.getDepartmentHeadById('DSUBD10');
+
+    return result.map(row => ({
+      ...base,
+      nombre: row?.nombre || null,
+      asignatura: row?.asignatura || null,
+      descripcionImpacto: row?.descripcionImpacto || null,
+      productos: row?.productos || null,
+      enfoque: row?.enfoque || null,
+      subdireccion: subdireccion || null
+    }));
+  }
+
+  /**
+   * DOC015, DOC016, DOC017, DOC018: Cursos de formación docente
+   * @param base: DocumentInterfaces.Base
+   * @param claveDocente: string
+   * @param claveDepartamento: string
+   * @param año: number
+   */
+  async generateCursosCapacitacionDocente(
+    base: FileInterfaces.Base,
+    claveDocente: string,
+    claveDepartamento: string,
+    año: number,
+    options: {
+      tipo: 'comision' | 'constancia'
+      origen: string
+    }
+  ): Promise<FileInterfaces.CursosImpartidos[]> {
+    let query = (
+      options.tipo === 'comision'
+      ? `SELECT 
+            NombreCurso AS nombreCurso,
+            Tipo AS tipoCurso,
+            HorasDuracion AS duracion
+        FROM Curso
+        WHERE ClaveDocente = @ClaveDocente
+            AND YEAR(FechaInicio) = @Año
+            AND OrigenCurso = @Origen`
+
+      : `SELECT 
+            NombreCurso AS nombreCurso,
+            NumeroRegistro AS numeroRegistro,
+            FechaInicio AS fechaInicio,
+            FechaFin AS fechaFin,
+            HorasDuracion AS duracion,
+            DocentesBeneficiados AS docentesBeneficiados
+        FROM Curso
+        WHERE ClaveDocente = @ClaveDocente
+            AND YEAR(FechaInicio) = @Año
+            AND OrigenCurso = @Origen`
+    )
+
+    const result = await this.dynamicDb.executeQueryByDepartmentId(
+      claveDepartamento,
+      query,
+      [{ name: 'ClaveDocente', value: claveDocente },
+       { name: 'Año', value: año },
+       { name: 'Origen', value: options.origen }]
+    );
+
+    return result.map(row => ({
+      ...base,
+      nombreCurso: row.nombreCurso,
+      tipoCurso: row.tipoCurso || null,
+      duracion: row.duracion,
+      fechaInicio: row?.fechaInicio || null,
+      fechaFin: row?.fechaFin || null,
+      numeroRegistro: row?.numeroRegistro || null,
+      docentesBeneficiados: row?.docentesBeneficiados || null
+    }));
+  }
+
+  /**
+   * DOC019, DOC020, DOC021, DOC022, DOC023, DOC024, DOC025: Diplomados
+   * @param base: DocumentInterfaces.Base
+   * @param claveDocente: string
+   * @param claveDepartamento: string
+   * @param año: number
+   */
+  async generateComisionDiplomados(
+    base: FileInterfaces.Base,
+    claveDocente: string,
+    claveDepartamento: string,
+    año: number,
+    tipo: 'comision' | 'constancia'
+  ): Promise<FileInterfaces.Diplomados[]> {
+    let query = (
+      tipo === 'comision'
+      ? `SELECT 
+            d.NombreDiplomado AS nombreDiplomado
+        FROM InstructorDiplomado id 
+        INNER JOIN Diplomado d 
+            ON id.ClaveDiplomado = d.ClaveDiplomado
+        WHERE id.ClaveDocente = @ClaveDocente
+            AND YEAR(id.FechaInicio) = @Año
+            AND d.ClaveDiplomado NOT IN (
+              SELECT ClaveDiplomado
+              FROM Diplomado_ProyectoEstrategico
+            )`
+      : `SELECT 
+            NombreModulo AS NombreModulo,
+            HorasDuracion AS horasDuracion
+        FROM InstructorDiplomado
+        WHERE ClaveDocente = @ClaveDocente
+            AND YEAR(FechaInicio) = @Año
+            AND d.ClaveDiplomado NOT IN (
+              SELECT ClaveDiplomado
+              FROM Diplomado_ProyectoEstrategico
+            )`
+    );
+
+    const result = await this.dynamicDb.executeQueryByDepartmentId(
+      claveDepartamento,
+      query,
+      [{ name: 'ClaveDocente', value: claveDocente },
+       { name: 'Año', value: año }]
+    );
+
+    return result.map(row => ({
+      ...base,
+      nombreDiplomado: row?.nombreDiplomado || null,
+      nombreModulo: row?.NombreModulo || null,
+      horasDuracion: row?.horasDuracion || null
+    }));
+  }
+
+  /**
+   * DOC026, DOC027: Diplomados estratégicos
+   * @param base: DocumentInterfaces.Base
+   * @param claveDocente: string
+   * @param claveDepartamento: string
+   * @param año: number
+   */
+  async generateComisionDiplomadosEstrategico(
+    base: FileInterfaces.Base,
+    claveDocente: string,
+    claveDepartamento: string,
+    año: number,
+    tipo: 'comision' | 'constancia'
+  ): Promise<FileInterfaces.DiplomadosEstrategicos[]> {
+    let query = (
+      tipo === 'comision'
+      ? `SELECT 
+            d.NombreDiplomado AS nombreDiplomado,
+            dpe.NombreProyecto AS nombreProyecto
+        FROM Diplomado_ProyectoEstrategico dpe 
+        INNER JOIN Diplomado d ON dpe.ClaveDiplomado = d.ClaveDiplomado
+        INNER JOIN InstructorDiplomado id ON dpe.ClaveDiplomado = id.ClaveDiplomado
+        WHERE id.ClaveDocente = @ClaveDocente
+            AND YEAR(id.FechaInicio) = @Año`
+            
+      : `SELECT 
+            d.NombreDiplomado AS nombreDiplomado,
+            dpe.NombreProyecto AS nombreProyecto,
+            id.HorasDuracion AS horasDuracion
+        FROM Diplomado_ProyectoEstrategico dpe 
+        INNER JOIN Diplomado d ON dpe.ClaveDiplomado = d.ClaveDiplomado
+        INNER JOIN InstructorDiplomado id ON dpe.ClaveDiplomado = id.ClaveDiplomado
+        WHERE id.ClaveDocente = @ClaveDocente
+            AND YEAR(id.FechaInicio) = @Año`
+    );
+
+
+    const result = await this.dynamicDb.executeQueryByDepartmentId(
+      claveDepartamento,
+      query,
+      [{ name: 'ClaveDocente', value: claveDocente },
+        { name: 'Año', value: año }]
+    );
+
+    return result.map(row => ({
+      ...base,
+      nombreDiplomado: row.nombreDiplomado,
+      nombreProyectoEstrategico: row.nombreProyecto,
+      duracionHoras: row?.horasDuracion || null
+    }));
+  }
+
+  /**
+   * DOC028, DOC030: Titulaciones
+   * @param base: DocumentInterfaces.Base
+   * @param claveDocente: string
+   * @param claveDepartamento: string
+   * @param año: number
+   */
+  async generateTitulaciones(
+    base: FileInterfaces.Base,
+    claveDocente: string,
+    claveDepartamento: string,
+    año: number,
+    tipo: 'acta' | 'constancia'
+  ): Promise<FileInterfaces.Titulacion[]> {
+    let query = (
+      tipo === 'acta'
+      ? `SELECT 
+            CONCAT(e.Nombre, ' ', e.ApellidoPaterno, ' ', e.ApellidoMaterno) AS nombreAlumno,
+            et.NumeroControl AS numeroControl,
+            et.Fecha AS fechaExamen,
+            et.ProgramaEducativo AS programaEducativo,
+            et.RolDocente AS rolDocente,
+            CONCAT(d1.Nombre, ' ', d1.ApellidoPaterno, ' ', d1.ApellidoMaterno) AS secretario,
+            CONCAT(d2.Nombre, ' ', d2.ApellidoPaterno, ' ', d2.ApellidoMaterno) AS vocal
+        FROM ExamenTitulacion et
+        INNER JOIN Estudiante e ON e.NumeroControl = et.NumeroControl
+        INNER JOIN Docente d1 ON et.ClaveSecretario = d1.ClaveDocente
+        INNER JOIN Docente d2 ON et.ClaveVocal = d2.ClaveDocente
+        WHERE et.ClaveDocente = @ClaveDocente
+          AND YEAR(et.Fecha) = @Año`
+
+      : `SELECT 
+            CONCAT(e.Nombre, ' ', e.ApellidoPaterno, ' ', e.ApellidoMaterno) AS nombreAlumno,
+            s.NumeroControl AS numeroControl,
+            s.FechaExamen AS fechaExamen,
+            s.ProgramaEducativo AS programaEducativo,
+            s.FolioActa AS folioActa
+        FROM SinodaliasTitulacion s
+        INNER JOIN Estudiante e ON s.NumeroControl = e.NumeroControl
+        WHERE s.ClaveDocente = @ClaveDocente
+          AND YEAR(s.FechaExamen) = @Año`
+    )
+
+    const result = await this.dynamicDb.executeQueryByDepartmentId(
+      claveDepartamento,
+      query,
+      [{ name: 'ClaveDocente', value: claveDocente },
+       { name: 'Año', value: año }]
+    );
+
+    return result.map(row => ({
+      ...base,
+      alumno: { 
+        nombreCompleto: row.nombreAlumno, 
+        numeroControl: row.numeroControl 
+      },
+      fechaExamen: row.fechaExamen,
+      programaEducativo: row.programaEducativo,
+      rolDocente: row?.rolDocente || null,
+      folioActa: row?.folioActa || null,
+      secretario: row?.secretario || null,
+      vocal: row?.vocal || null,
+    }));
+  }
+
+  /**
+   * DOC029: Convenio de colaboración académica
+   * @param base: DocumentInterfaces.Base
+   * @param claveDocente: string
+   * @param claveDepartamento: string
+   * @param año: number
+   */
+  async generateConveniosAcademicos(
+    base: FileInterfaces.Base,
+    claveDocente: string,
+    claveDepartamento: string,
+    año: number
+  ): Promise<FileInterfaces.ConvenioColaboracion[]> {
+    
+    const query = `
+      SELECT 
+          ca.Institucion1 AS institucion1,
+          ca.Institucion2 AS institucion2,
+          ca.TipoColaboracion AS tipoConvenio,
+          ca.RolDocente AS rolDocente
+      FROM Direccion.dbo.ColaboracionAcademica ca
+      WHERE ca.ClaveDocente = @ClaveDocente
+          AND ca.Año = @Año
+    `;
+
+    const result = await this.dynamicDb.executeQueryByDepartmentId(
+      claveDepartamento,
+      query,
+      [{ name: 'ClaveDocente', value: claveDocente },
+        { name: 'Año', value: año }]
+    );
+
+    return result.map(row => ({
+      ...base,
+      institucion1: row.institucion1,
+      institucion2: row.institucion2,
+      tipoConvenio: row.tipoConvenio,
+      rolDocente: row.rolDocente
+    }));
+  }
+
+  /**
+   * DOC031: Programa de asesorías de ciencias básicas
+   * @param base: DocumentInterfaces.Base
+   * @param claveDocente: string
+   * @param claveDepartamento: string
+   * @param año: number
+   */
+  async generateAsesoriasCienciasBasicas(
+    base: FileInterfaces.Base,
+    claveDocente: string,
+    claveDepartamento: string,
+    año: number,
+  ): Promise<FileInterfaces.ProgramaCienciasBasicas[]> {
+    let query = `
+      SELECT
+          a.Nombre AS asignatura,
+          ar.Horario AS horario,
+          pa.Modalidad AS modalidad,
+          CONCAT(pa.Semestre, ' ', pa.Año) AS periodo
+      FROM ProgramaAsesoria pa
+      INNER JOIN Asesoria_Asignatura aa 
+          ON pa.ClaveAsesoria = aa.ClaveAsesoria
+      INNER JOIN Asignatura a ON aa.ClaveAsignatura = a.ClaveAsignatura
+      INNER JOIN Asesoria_Registros ar 
+          ON pa.ClaveAsesoria = ar.ClaveAsesoria
+      WHERE pa.ClaveDocente = @ClaveDocente
+          AND pa.Año = @Año`
+    ;
+
+    const r = await this.dynamicDb.executeQueryByDepartmentId(
+      claveDepartamento,
+      query,
+      [{ name: 'ClaveDocente', value: claveDocente },
+        { name: 'Año', value: año }]
+    );
+
+    let asesorias: FileInterfaces.AsesoriaDetalle[] = [];
+    r.forEach(row => {
+      asesorias.push({
+        asignatura: row.asignatura,
+        horario: row.horario,
+        modalidad: row.modalidad,
+        periodo: row.periodo
+      })
+    })
+
+    const subdireccion = await this.getDepartmentHeadById('DSUBD10');
+    return [{
+      ...base,
+      asesorias,
+      subdireccion: subdireccion || null,
+      año: año
+    }]
+  }
+
+  /**
+   * DOC032: Constancia por asesoría en ciencias básicas
+   * @param base: DocumentInterfaces.Base
+   * @param claveDocente: string
+   * @param claveDepartamento: string
+   * @param año: number
+   */
+  async generateConstanciaAsesoriaCienciasBasicas(
+    base: FileInterfaces.Base,
+    claveDocente: string,
+    claveDepartamento: string,
+    año: number
+  ): Promise<FileInterfaces.ConstanciaCienciasBasicas[]> {
+    const query = `
+      SELECT
+          SUM(ar.TotalHoras) AS totalHoras,
+          SUM(ar.TotalEstudiantes) AS totalEstudiantes,
+          CONCAT(pa.Semestre, ' ', pa.Año) AS periodo
+      FROM ProgramaAsesoria pa
+      INNER JOIN Asesoria_Asignatura aa 
+          ON pa.ClaveAsesoria = aa.ClaveAsesoria
+      INNER JOIN Asignatura a ON aa.ClaveAsignatura = a.ClaveAsignatura
+      INNER JOIN Asesoria_Registros ar 
+          ON pa.ClaveAsesoria = ar.ClaveAsesoria
+      WHERE pa.ClaveDocente = @ClaveDocente
+          AND pa.Año = @Año
+      GROUP BY pa.Semestre, pa.Año`
+
+    const result = await this.dynamicDb.executeQueryByDepartmentId(
+      claveDepartamento,
+      query,
+      [{ name: 'ClaveDocente', value: claveDocente },
+       { name: 'Año', value: año }]
+    );
+
+    return result.map(row => ({
+      ...base,
+      totalHoras: row.totalHoras,
+      totalEstudiantes: row.totalEstudiantes,
+      periodo: row.periodo
+    }));
+  }
+}

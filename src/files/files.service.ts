@@ -76,6 +76,98 @@ export class FilesService {
     let documentos: FileInterfaces.GeneratedFile[] = [];
 
     const generation: Record<string, Generator> = {
+      // DOC001: Horarios
+      'DOC001': () =>
+        this.generateHorariosAsignaturas(base, claveDocente, claveDepartamento, año),
+
+      // DOC002: Constancia de asignaturas impartidas
+      'DOC002': () =>
+        this.generateConstanciaAsignaturas(base, claveDocente, claveDepartamento, año),
+
+      // DOC008: Constancia de tutorías PIT
+      'DOC008': () =>
+        this.generateTutorias(base, claveDocente, claveDepartamento, año),
+
+      // DOC009: Constancia de acreditación de programas
+      'DOC009': () =>
+        this.generateAcreditacionProgramas(base, claveDocente, claveDepartamento),
+
+      // DOC010: Constancia de actividades complementarias
+      'DOC010': () =>
+        this.generateActividadesComplementarias(base, claveDocente, claveDepartamento, año),
+
+      // DOC011: Constancia de proyecto integrador
+      'DOC011': () =>
+        this.generateProyectoIntegrador(base, claveDocente, claveDepartamento, año),
+
+      // DOC012: Constancia manual de prácticas
+      'DOC012': () =>
+        this.generateConstanciasElaboracionMaterial(base, claveDocente, claveDepartamento, año, 'manual'),
+
+      // DOC013: Constancia estrategias didácticas
+      'DOC013': () =>
+        this.generateConstanciasElaboracionMaterial(base, claveDocente, claveDepartamento, año, 'estrategias'),
+
+      // DOC014: Constancia materiales didácticos inclusivos
+      'DOC014': () =>
+        this.generateConstanciasElaboracionMaterial(base, claveDocente, claveDepartamento, año, 'materiales'),
+
+      // DOC015: Comisión por instructor de cursos para docentes
+      'DOC015': () =>
+        this.generateCursosImpartidos(base, claveDocente, claveDepartamento, año,
+          { tipo: 'comision', origen: 'tecnológico'}),
+
+      // DOC016: Constancia por instructor de cursos para docentes
+      'DOC016': () =>
+        this.generateCursosImpartidos(base, claveDocente, claveDepartamento, año,
+          { tipo: 'constancia', origen: 'tecnológico'}),
+
+      // DOC017: Comisión por instructor de cursos TecNM
+      'DOC017': () =>
+        this.generateCursosImpartidos(base, claveDocente, claveDepartamento, año,
+          { tipo: 'comision', origen: 'tecnm'}),
+
+      // DOC018: Constancia por instructor de cursos TecNM
+      'DOC018': () =>
+        this.generateCursosImpartidos(base, claveDocente, claveDepartamento, año,
+          { tipo: 'constancia', origen: 'tecnm'}),
+
+      // DOC019: Comisión por instructor de diplomados
+      'DOC019': () =>
+        this.generateDiplomados(base, claveDocente, claveDepartamento, año, 'comision'),
+
+      // DOC020: Constancia por instructor de diplomados
+      'DOC020': () =>
+        this.generateDiplomados(base, claveDocente, claveDepartamento, año, 'constancia'),
+
+      // DOC026: Comisión diplomados estrategicos
+      'DOC026': () =>
+        this.generateDiplomadosEstrategicos(base, claveDocente, claveDepartamento, año, 'comision'),
+
+      // DOC027: Constancia diplomados estrategicos
+      'DOC027': () =>
+        this.generateDiplomadosEstrategicos(base, claveDocente, claveDepartamento, año, 'constancia'),
+
+      // DOC028: Acta de examen de titulación
+      'DOC028': () =>
+        this.generateTitulaciones(base, claveDocente, claveDepartamento, año, 'acta'),
+
+      // DOC030: Constancia sinodal titulación
+      'DOC030': () =>
+        this.generateTitulaciones(base, claveDocente, claveDepartamento, año, 'constancia'),
+
+      // DOC029: Convenio de colaboración
+      'DOC029': () =>
+        this.generateConveniosAcademicos(base, claveDocente, claveDepartamento, año),
+
+      // DOC031: Programa de asesorías en ciencias básicas
+      'DOC031': () =>
+        this.generateAsesoriasCienciasBasicas(base, claveDocente, claveDepartamento, año),
+
+      // DOC032: Constancia de asesorías en ciencias básicas
+      'DOC032': () =>
+        this.generateConstanciaAsesoriaCienciasBasicas(base, claveDocente, claveDepartamento, año),
+
       // DOC033: Comisión por asesoría en concursos
       'DOC033': () => 
         this.generateAsesoriaConcursos(base, claveDocente, claveDepartamento, año, 
@@ -1412,7 +1504,7 @@ export class FilesService {
    * @param claveDepartamento: string
    * @param año: number
    */
-  async generateConstanciaAsignaturaImp(
+  async generateConstanciaAsignaturas(
     base: FileInterfaces.Base,
     claveDocente: string,
     claveDepartamento: string,
@@ -1729,7 +1821,7 @@ export class FilesService {
    * @param claveDepartamento: string
    * @param año: number
    */
-  async generateCursosCapacitacionDocente(
+  async generateCursosImpartidos(
     base: FileInterfaces.Base,
     claveDocente: string,
     claveDepartamento: string,
@@ -1790,7 +1882,7 @@ export class FilesService {
    * @param claveDepartamento: string
    * @param año: number
    */
-  async generateComisionDiplomados(
+  async generateDiplomados(
     base: FileInterfaces.Base,
     claveDocente: string,
     claveDepartamento: string,
@@ -1844,7 +1936,7 @@ export class FilesService {
    * @param claveDepartamento: string
    * @param año: number
    */
-  async generateComisionDiplomadosEstrategico(
+  async generateDiplomadosEstrategicos(
     base: FileInterfaces.Base,
     claveDocente: string,
     claveDepartamento: string,

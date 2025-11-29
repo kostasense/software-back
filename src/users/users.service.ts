@@ -25,11 +25,85 @@ export class UsersService {
   async findByClaveUsuario(claveUsuario: string) {
     const pool = this.mssql.getPool();
     const result = await pool
-      .request()
-      .input('ClaveUsuario', claveUsuario)
-      .query(`SELECT * FROM Usuario WHERE ClaveUsuario = @ClaveUsuario`);
+        .request()
+        .input('ClaveUsuario', claveUsuario)
+        .query(`
+        SELECT 
+            u.ClaveUsuario,
+            u.Correo,
+            u.Contrasena,
+            u.Rol,
+            u.ClaveDepartamento,
+            u.ClaveDocente,
+            -- Datos del Docente (si aplica)
+            d.Nombre AS DocenteNombre,
+            d.ApellidoPaterno AS DocenteApellidoPaterno,
+            d.ApellidoMaterno AS DocenteApellidoMaterno,
+            d.ClaveDepartamento AS DocenteDepartamento,
+            -- Datos del Departamento del Docente
+            dd.Nombre AS DocenteDepartamentoNombre,
+            -- Datos del Departamento (si el usuario es administrativo)
+            dep.Nombre AS DepartamentoNombre,
+            dep.TitularNombre AS DepartamentoTitularNombre,
+            dep.TitularApellidoPaterno AS DepartamentoTitularApellidoPaterno,
+            dep.TitularApellidoMaterno AS DepartamentoTitularApellidoMaterno,
+            dep.Correo AS DepartamentoCorreo,
+            dep.URL AS DepartamentoURL
+        FROM Usuario u
+        LEFT JOIN Docente d ON u.ClaveDocente = d.ClaveDocente
+        LEFT JOIN Departamento dd ON d.ClaveDepartamento = dd.ClaveDepartamento
+        LEFT JOIN Departamento dep ON u.ClaveDepartamento = dep.ClaveDepartamento
+        WHERE u.ClaveUsuario = @ClaveUsuario
+        `);
     
-    return result.recordset[0] || null;
+    if (!result.recordset[0]) {
+        return null;
+    }
+    
+    const user = result.recordset[0];
+    
+    // Construir objeto de respuesta con información completa
+    const userInfo: any = {
+        claveUsuario: user.ClaveUsuario,
+        correo: user.Correo,
+        contrasena: user.Contrasena,
+        rol: user.Rol,
+    };
+    
+    // Si es docente, agregar información del docente
+    if (user.ClaveDocente) {
+        userInfo.tipoUsuario = 'DOCENTE';
+        userInfo.docente = {
+        claveDocente: user.ClaveDocente,
+        nombre: user.DocenteNombre,
+        apellidoPaterno: user.DocenteApellidoPaterno,
+        apellidoMaterno: user.DocenteApellidoMaterno,
+        nombreCompleto: `${user.DocenteNombre} ${user.DocenteApellidoPaterno} ${user.DocenteApellidoMaterno}`.trim(),
+        departamento: {
+            claveDepartamento: user.DocenteDepartamento,
+            nombre: user.DocenteDepartamentoNombre
+        }
+        };
+    }
+    
+    // Si es administrativo, agregar información del departamento
+    if (user.ClaveDepartamento) {
+        userInfo.tipoUsuario = 'ADMINISTRATIVO';
+        userInfo.departamento = {
+        claveDepartamento: user.ClaveDepartamento,
+        nombre: user.DepartamentoNombre,
+        titular: {
+            nombre: user.DepartamentoTitularNombre,
+            apellidoPaterno: user.DepartamentoTitularApellidoPaterno,
+            apellidoMaterno: user.DepartamentoTitularApellidoMaterno,
+            nombreCompleto: `${user.DepartamentoTitularNombre} ${user.DepartamentoTitularApellidoPaterno} ${user.DepartamentoTitularApellidoMaterno}`.trim()
+        },
+        correo: user.DepartamentoCorreo,
+        url: user.DepartamentoURL
+        };
+    }
+    
+    return userInfo;
   }
 
   async updateUser(claveUsuario: string, dto: UpdateUserDto) {

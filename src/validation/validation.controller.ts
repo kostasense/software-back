@@ -38,7 +38,7 @@ export class ValidationController {
     try {
       // Verificar que el usuario existe y obtener claveDocente
       const user = await this.usersService.findByClaveUsuario(claveUsuario);
-      if (!user || !user.ClaveDocente) {
+      if (!user || user.tipoUsuario !== 'DOCENTE' || !user.docente?.claveDocente) {
         return {
           success: false,
           statusCode: HttpStatus.NOT_FOUND,
@@ -87,7 +87,7 @@ export class ValidationController {
     
     try {
       const user = await this.usersService.findByClaveUsuario(claveUsuario);
-      if (!user || !user.ClaveDocente) {
+      if (!user || user.tipoUsuario !== 'DOCENTE' || !user.docente?.claveDocente) {
         return {
           success: false,
           statusCode: HttpStatus.NOT_FOUND,

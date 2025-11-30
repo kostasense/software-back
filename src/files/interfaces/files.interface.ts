@@ -29,18 +29,17 @@ export interface Horarios extends Base {
     totalHoras: number | null;
 }
 
-interface AsignaturaDetalle {
-    asignatura: string | null;
-    claveAsignatura: string | null;
-    grupo: string | null;
+export interface AsignaturaDetalle {
+    nombre: string | null;
+    clave: string | null;
+    grupo?: string | null;
     estudiantes: number | null;
-    aula: string | null;
+    aula?: string | null;
     nivel: string | null;
-    modalidad: string | null;
-    carrera: string | null;
-    horario: string[] | null;
-    horasSemanales: number | null;
-    periodo: string | null;
+    modalidad?: string | null;
+    horario?: string[] | null;
+    horas?: number | null;
+    periodo?: string | null;
 }
 
 /**
@@ -50,11 +49,9 @@ interface AsignaturaDetalle {
  *  * DOC006 - Constancia de asignaturas posgrado
  */
 export interface ConstanciaAsignaturas extends Base {
-    expediente: string | null;
-    periodo: string | null;
     año: number | null;
     asignaturas: AsignaturaDetalle[] | null;
-    totalEstudiantes: number | null;
+    totalAlumnos: number | null;
 }
 
 /**
@@ -66,9 +63,8 @@ export interface Tutorias extends Base {
     totalTutorados: number | null;
 }
 
-interface TutoriasDetalle {
+export interface TutoriasDetalle {
     periodo: string | null;
-    año: number | null;
     tutorados: number | null;
     carrera: string | null;
 }
@@ -77,7 +73,7 @@ interface TutoriasDetalle {
  * Interfaz para:
  *  * DOC009 - Constancia de acreditación de programa
  */
-export interface AcreditacionPrograma {
+export interface AcreditacionPrograma extends Base {
     nombrePrograma: string | null;
     organismoAcreditador: string | null;
     fechaAcreditacion: Date | null;
@@ -108,29 +104,15 @@ export interface ProyectoIntegrador extends Base {
 /**
  * Interfaz para:
  *  * DOC012 - Constancia manual de prácticas
- */
-export interface ManualPracticas extends Base {
-    nombreManual: string | null;
-}
-
-/**
- * Interfaz para:
  *  * DOC013 - Constancia estrategias didácticas
- */
-export interface EstrategiasDidacticas extends Base {
-    asignatura: string | null;
-    productos: string | null;
-    descripcionImpacto: string | null;
-}
-
-/**
- * Interfaz para:
  *  * DOC014 - Constancia materiales didácticos inclusivos
  */
-export interface MaterialesDidacticos extends Base {
-    enfoque: string | null;
-    productos: string | null;
-    descripcionImpacto: string | null;
+export interface ElaboracionMaterial extends Base {
+    nombre?: string | null;
+    asignatura?: string | null;
+    productos?: string | null;
+    descripcionImpacto?: string | null;
+    enfoque?: string | null;
 }
 
 /**
@@ -147,7 +129,7 @@ export interface CursosImpartidos extends Base {
     fechaInicio?: Date | null;
     fechaFin?: Date | null;
     numeroRegistro?: string | null;
-    totalDocentes?: number | null;
+    docentesBeneficiados?: number | null;
 }
 
 /**
@@ -159,14 +141,22 @@ export interface CursosImpartidos extends Base {
  *  * DOC023 - Constancia diplomado recursos educativos
  *  * DOC024 - Comisión diplomado educación inclusiva
  *  * DOC025 - Constancia diplomado educación inclusiva
- *  * DOC026 - Comisión diplomados estratégicos
- *  * DOC027 - Constancia diplomados estratégicos
  */
 export interface Diplomados extends Base {
     nombreDiplomado?: string | null;
     nombreModulo?: string | null;
     duracionHoras?: number | null;
-    nombreProyectoEstrategico?: string | null;
+}
+
+/**
+ * Interfaz para:
+ *  * DOC026 - Comisión diplomados estratégicos
+ *  * DOC027 - Constancia diplomados estratégicos
+ */
+export interface DiplomadosEstrategicos extends Base {
+    nombreDiplomado: string | null;
+    duracionHoras?: number | null;
+    nombreProyectoEstrategico: string | null;
 }
 
 /**
@@ -174,7 +164,6 @@ export interface Diplomados extends Base {
  *  * DOC028 - Acta examen profesional/grado
  *  * DOC030 - Constancia sinodal titulación
  */
-
 export type Alumno = {
     nombreCompleto: string;
     numeroControl: string;
@@ -182,12 +171,12 @@ export type Alumno = {
 
 export interface Titulacion extends Base {
     alumno: Alumno;
-    modalidadTitulacion?: string | null;
     fechaExamen?: Date | null;
     programaEducativo?: string | null;
     rolDocente?: string | null;
     folioActa?: string | null;
-    nivel?: string | null;
+    vocal?: string | null;
+    secretario?: string | null;
 }
 
 /**
@@ -204,19 +193,27 @@ export interface ConvenioColaboracion extends Base {
 /**
  * Interfaz para:
  *  * DOC031 - Programa de asesorías en ciencias básicas
- *  * DOC032 - Constancia por asesoría en ciencias básicas
  */
-export interface AsesoriaCienciasBasicas extends Base {
-    totalHoras?: number | null;
-    asesorias?: AsesoriaDetalle[] | null;
+export interface ProgramaCienciasBasicas extends Base {
+    asesorias: AsesoriaDetalle[] | null;
+    año: number | null;
 }
 
-interface AsesoriaDetalle {
-    horaio?: string | null;
-    asignatura?: string | null;
-    modalidad?: string | null;
-    estudiantes?: number | null;
-    periodo?: string | null;
+export interface AsesoriaDetalle {
+    horario: string | null;
+    asignatura: string | null;
+    modalidad: string | null;
+    periodo: string | null;
+}
+
+/**
+ * Interfaz para:
+ *  * DOC032 - Constancia de asesorías en ciencias básicas
+ */
+export interface ConstanciaCienciasBasicas extends Base {
+    totalHoras: number | null;
+    periodo: string | null;
+    totalEstudiantes: number | null;
 }
 
 /**
@@ -388,4 +385,17 @@ export type GeneratedFile =
     | CurriculumVitae
     | LicenciasEspeciales
     | CumplimientoActividades
-    | Evaluaciones;
+    | Evaluaciones
+    | Horarios
+    | ConstanciaAsignaturas
+    | Tutorias
+    | AcreditacionPrograma
+    | ActividadesComplementarias
+    | ProyectoIntegrador
+    | ElaboracionMaterial
+    | CursosImpartidos
+    | Diplomados
+    | Titulacion
+    | ConvenioColaboracion
+    | ProgramaCienciasBasicas
+    | ConstanciaCienciasBasicas;

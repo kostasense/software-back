@@ -5,11 +5,19 @@ import { UsersService } from '../users/users.service';
 import { ActivitiesService } from '../activities/activities.service';
 import * as FileInterfaces from './interfaces/files.interface';
 
+export interface DocumentoConMetadatos {
+  claveDocumento: string;
+  nombreArchivo: string;
+  tipoDocumento: string;
+  fechaGeneracion: Date;
+  contenido: FileInterfaces.GeneratedFile;
+}
+
 interface Expediente {
   claveExpediente: string;
   añoGeneracion: number;
   claveDocente: string;
-  documentos: FileInterfaces.GeneratedFile[];
+  documentos: DocumentoConMetadatos[];
 }
 
 type Generator = (
@@ -32,7 +40,7 @@ export class FilesService {
 
   async generateFiles(
     claveUsuario: string
-  ): Promise<FileInterfaces.GeneratedFile[]> {
+  ): Promise<DocumentoConMetadatos[]> {
     try {
       this.logger.log(`Iniciando generación de archivos para usuario: ${claveUsuario}`);
       
@@ -81,7 +89,7 @@ export class FilesService {
     
     let claveDepartamento: string;
     let base;
-    let documentos: FileInterfaces.GeneratedFile[] = [];
+    let documentos: DocumentoConMetadatos[] = [];
     
     const generation: Record<string, Generator> = {
       // DOC001: Horarios
@@ -437,61 +445,68 @@ export class FilesService {
     claveDepartamento: string, 
     año: number, 
     generation: Record<string, Generator>
-    ): Promise<FileInterfaces.GeneratedFile[]> {
+    ): Promise<DocumentoConMetadatos[]> {
     try {
         this.logger.log(`[GET_FILES_BY_DEPT] Iniciando para departamento: ${claveDepartamento}`);
         
-        // Obtener información base
         const base: FileInterfaces.Base = {
         docente: {
-        ...(await this.getProfessorDetails(claveDocente)),
-        nombreCompleto: await this.getProfessorNameById(claveDocente)
+            ...(await this.getProfessorDetails(claveDocente)),
+            nombreCompleto: await this.getProfessorNameById(claveDocente)
         },
         titular: await this.getDepartmentHeadById(claveDepartamento),
         departamento: await this.getDepartmentNameById(claveDepartamento),
         claveDepartamento: claveDepartamento,
         };
         
-        this.logger.log(`[GET_FILES_BY_DEPT] Base creada:`, {
-        docente: base.docente,
-        titular: base.titular,
-        departamento: base.departamento
-        });
+        this.logger.log(`[GET_FILES_BY_DEPT] Base creada:`, JSON.stringify(base));
         
-        // Obtener claves de documentos para este departamento
         const documentKeys = await this.getDocumentsByDepartment(claveDepartamento);
-        this.logger.log(`[GET_FILES_BY_DEPT] Documentos a generar: ${documentKeys.length}`);
-        this.logger.log(`[GET_FILES_BY_DEPT] Claves: ${JSON.stringify(documentKeys)}`);
-        
-        const docs: FileInterfaces.GeneratedFile[] = [];
+        const docs: DocumentoConMetadatos[] = [];
         
         for (const claveDocumento of documentKeys) {
-        try {
-            // Verificar si existe un generador para esta clave
-            if (!generation[claveDocumento]) {
-            this.logger.warn(`[GET_FILES_BY_DEPT] No existe generador para: ${claveDocumento}`);
-            continue;
+            try {
+                if (!generation[claveDocumento]) {
+                    this.logger.warn(`[GET_FILES_BY_DEPT] No existe generador para: ${claveDocumento}`);
+                        continue;
+                    }
+                    
+                    const generatorResult = await generation[claveDocumento](base, claveDocente, claveDepartamento, año);
+                    
+                    const resultArray = Array.isArray(generatorResult) ? generatorResult : [generatorResult];
+                    
+                    if (resultArray.length > 0) {
+                    const nombreDocumento = await this.getDocumentNameById(claveDocumento);
+                    
+                    const wrappedResults = resultArray.map((doc, index) => {
+                        const contenidoCompleto = Object.assign(
+                        {}, 
+                        {
+                            docente: base.docente,
+                            titular: base.titular,
+                            departamento: base.departamento,
+                            claveDepartamento: base.claveDepartamento,
+                        },
+                            doc as object
+                        );
+                        
+                        return {
+                            claveDocumento: claveDocumento,
+                            nombreArchivo: `${claveDocumento}_${claveDocente}_${index + 1}_${Date.now()}.pdf`,
+                            tipoDocumento: nombreDocumento || `Documento ${claveDocumento}`,
+                            fechaGeneracion: new Date(),
+                            contenido: contenidoCompleto
+                        };
+                    });
+                    
+                    docs.push(...wrappedResults);
+                    this.logger.log(`[GET_FILES_BY_DEPT] ✅ Generados ${wrappedResults.length} archivos para ${claveDocumento}`);
+                } else {
+                    this.logger.warn(`[GET_FILES_BY_DEPT] ⚠️ Sin resultados para ${claveDocumento}`);
+                }
+            } catch (error) {
+                this.logger.error(`[GET_FILES_BY_DEPT] Error generando ${claveDocumento}:`, error);
             }
-            
-            this.logger.log(`[GET_FILES_BY_DEPT] Generando documento: ${claveDocumento}`);
-            
-            // Llamar al generador - NOTA: Los generadores no usan todos los mismos parámetros
-            base.claveDocumento = claveDocumento;
-            const result = await generation[claveDocumento](base, claveDocente, claveDepartamento, año);
-            
-            if (result && Array.isArray(result) && result.length > 0) {
-            docs.push(...result);
-            this.logger.log(`[GET_FILES_BY_DEPT] ✅ Generados ${result.length} archivos para ${claveDocumento}`);
-            } else if (result && !Array.isArray(result)) {
-            // Si el generador retorna un solo documento, convertir a array
-            docs.push(result);
-            this.logger.log(`[GET_FILES_BY_DEPT] ✅ Generado 1 archivo para ${claveDocumento}`);
-            } else {
-            this.logger.warn(`[GET_FILES_BY_DEPT] ⚠️ Sin resultados para ${claveDocumento}`);
-            }
-        } catch (error) {
-            this.logger.error(`[GET_FILES_BY_DEPT] Error generando ${claveDocumento}:`, error);
-        }
         }
         
         this.logger.log(`[GET_FILES_BY_DEPT] Total documentos generados: ${docs.length}`);
@@ -575,7 +590,7 @@ export class FilesService {
    */
   async getProfessorDetails(claveDocente: string): Promise<FileInterfaces.Docente> {
     const result = await this.dynamicDb.executeQueryByDepartmentId(
-      claveDocente,
+      'DRRHH07',
       `SELECT 
           FechaIngreso AS fechaIngreso,
           FechaIngresoSEP AS fechaIngresoSEP,
@@ -660,12 +675,15 @@ export class FilesService {
    * @claveDocente string
    */
   async insertGeneratedDocuments(
-    documentos: FileInterfaces.GeneratedFile[],
+    documentos: DocumentoConMetadatos[],
     claveExpediente: string,
-  ) {
+    ) {
     const pool = this.mssql.getPool();
+    
     for (let index = 0; index < documentos.length; index++) {
         const doc = documentos[index];
+        
+        try {
         await pool
             .request()
             .input('ClaveDocumentoGenerado', `${claveExpediente}-${doc.claveDocumento}-${index + 1}`)
@@ -673,9 +691,26 @@ export class FilesService {
             .input('ClaveDocumento', doc.claveDocumento)
             .input('Contenido', JSON.stringify(doc))
             .query(`
-                INSERT INTO DocumentoGenerado (ClaveDocumentoGenerado, ClaveExpediente, ClaveDocumento, Contenido)
-                VALUES (@ClaveDocumentoGenerado, @ClaveExpediente, @ClaveDocumento, @Contenido)
+            INSERT INTO DocumentoGenerado (
+                ClaveDocumentoGenerado, 
+                ClaveExpediente, 
+                ClaveDocumento, 
+                Contenido
+            )
+            VALUES (
+                @ClaveDocumentoGenerado, 
+                @ClaveExpediente, 
+                @ClaveDocumento, 
+                @Contenido
+            )
             `);
+            
+        this.logger.log(`[INSERT_DOCS] Documento ${doc.claveDocumento} insertado correctamente`);
+        
+        } catch (error) {
+        this.logger.error(`[INSERT_DOCS] Error insertando documento ${doc.claveDocumento}:`, error);
+        throw error;
+        }
     }
   }
 

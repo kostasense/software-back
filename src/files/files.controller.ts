@@ -8,7 +8,8 @@ import {
   Body,
   Query,
   BadRequestException,
-  Get
+  Get,
+  Param
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -84,6 +85,39 @@ export class FilesController {
     } catch (error) {
         this.logger.error(`Error al obtener documentos: ${error.message}`, error.stack);
         throw error;
+    }
+  }
+
+  /**
+   * Obtener expedientes por clave de usuario
+   * GET /files/expedientes/:claveUsuario
+   */
+  @Get('expedientes/:claveUsuario')
+  async getExpedientesByUsuario(@Param('claveUsuario') claveUsuario: string) {
+    this.logger.log(`Obteniendo expedientes del usuario: ${claveUsuario}`);
+    
+    if (!claveUsuario) {
+      throw new BadRequestException('La clave de usuario es requerida');
+    }
+
+    try {
+      const expedientes = await this.filesService.getExpedientesByClaveUsuario(claveUsuario);
+      
+      return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        data: expedientes,
+        total: expedientes.length,
+        message: expedientes.length > 0 
+          ? 'Expedientes obtenidos exitosamente' 
+          : 'No se encontraron expedientes para este usuario'
+      };
+    } catch (error) {
+      this.logger.error(
+        `Error al obtener expedientes del usuario ${claveUsuario}: ${error.message}`, 
+        error.stack
+      );
+      throw error;
     }
   }
 }

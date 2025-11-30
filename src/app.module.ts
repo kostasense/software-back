@@ -7,6 +7,8 @@ import { TicketsModule } from './tickets/tickets.module';
 import { FilesModule } from './files/files.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { ActivitiesModule } from './activities/activities.module';
+import { ValidationModule } from './validation/validation.module';
 
 @Module({
   imports: [
@@ -17,7 +19,9 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     UsersModule,
     DatabaseModule,
     TicketsModule,
-    FilesModule
+    FilesModule,
+    ActivitiesModule,
+    ValidationModule,
   ],
   providers: [
     {

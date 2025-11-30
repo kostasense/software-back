@@ -30,9 +30,9 @@ export class ValidationServices {
 
         // Obtener clave de departamentos
         const academia = await this.filesService.getDepartmentByProfessorId(claveDocente);
-        const recursosHumanos = await this.filesService.getDepartmentIdByName('recursos humanos');
-        const docencia = await this.filesService.getDepartmentIdByName('docencia');
-        const desarrolloAcademico = await this.filesService.getDepartmentIdByName('desarrollo académico');
+        const recursosHumanos = await this.filesService.getDepartmentIdByName('RECURSOS HUMANOS');
+        const docencia = await this.filesService.getDepartmentIdByName('DIRECCIÓN DE DOCENCIA');
+        const desarrolloAcademico = await this.filesService.getDepartmentIdByName('DESARROLLO ACADÉMICO');
 
 
         // Verificar asignaturas posgrado en los dos semestres
@@ -167,7 +167,7 @@ export class ValidationServices {
              { name: 'AñoActual', value: new Date().getFullYear() }]
         )
 
-        const proyecto = await this.proyectoInvestigacion(claveDocente, 'DDIRD09');
+        const proyecto = await this.proyectoInvestigacion(claveDocente, 'DDIRD09', año);
 
         return [{
             name: 'Carga académica reglamentaria cumplida', 
@@ -183,11 +183,12 @@ export class ValidationServices {
      */
     async proyectoInvestigacion(
         claveDocente: string,
-        claveDepartamento: string
+        claveDepartamento: string,
+        año: number
     ): Promise<Requirement[]> {
 
         const docenteInvestigador = await this.dynamicDatabaseService.executeQueryByDepartmentId(
-            claveDepartamento,
+            'DRRHH07',
             `SELECT 
                 Categoria as categoria
             FROM Docente 
@@ -204,7 +205,8 @@ export class ValidationServices {
             FROM ProyectoInvestigacion pi 
             WHERE pi.ClaveDocente = @ClaveDocente
                 AND Año = @Año`,
-            [{ name: 'ClaveDocente', value: claveDocente }]
+            [{ name: 'ClaveDocente', value: claveDocente },
+             { name: 'Año', value: año }]
         )
 
         return ([

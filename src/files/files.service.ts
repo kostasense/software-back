@@ -41,7 +41,7 @@ export class FilesService {
       if (!user) {
         throw new NotFoundException(`Usuario con clave ${claveUsuario} no encontrado`);
       }
-      this.logger.log(`Usuario encontrado: ${user.Correo}`);
+      this.logger.log(`Usuario encontrado: ${user.correo}`);
 
       const claveDocente = await this.getProfessorId(claveUsuario);
       if (!claveDocente) {
@@ -59,407 +59,578 @@ export class FilesService {
   }
 
   /**
-   * Generar expediente
-   * @param claveDocente string
-   */
+ * Generar expediente
+ * @param claveDocente string
+ */
   async generateExpediente(
     claveDocente: string
   ): Promise<Expediente> {
+    this.logger.log(`[GENERATE_EXPEDIENTE] ====== INICIANDO GENERACIÓN DE EXPEDIENTE ======`);
+    this.logger.log(`[GENERATE_EXPEDIENTE] Clave Docente: ${claveDocente}`);
+    
     const añoGeneracion = new Date().getFullYear();
     const año = añoGeneracion;
     const claveExpediente = `${claveDocente}-${añoGeneracion}`;
-
+    
+    this.logger.log(`[GENERATE_EXPEDIENTE] Año de generación: ${añoGeneracion}`);
+    this.logger.log(`[GENERATE_EXPEDIENTE] Clave de expediente: ${claveExpediente}`);
+    
+    // Eliminar expediente existente
+    this.logger.log(`[GENERATE_EXPEDIENTE] Verificando si existe expediente anterior...`);
     await this.deleteExpedienteIfExists(claveExpediente);
-
+    
     let claveDepartamento: string;
     let base;
     let documentos: FileInterfaces.GeneratedFile[] = [];
-
-    const generation: Record<string, Generator> = {
     
-      // ========== DOCUMENTOS 1-32 ==========
-      // DOC001: Horarios de asignaturas licenciatura
-      'DOC001': () => 
-      this.generateHorarioAsignaturasLic(base, claveDocente, claveDepartamento, año, 
-      { tipo: 'horarios', nivel: 'licenciatura' }),
-
-// DOC002: Constancia de asignaturas impartidas
-'DOC002': () => 
-  this.generateConstanciaAsignaturaImp(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia', nivel: 'licenciatura' }),
-
-// DOC003: Horarios de asignatura adicional
-'DOC003': () => 
-  this.generateHorarioAsignaturaAdi(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'horarios-adicionales', nivel: 'licenciatura' }),
-
-// DOC004: Constancia de séptima asignatura
-'DOC004': () => 
-  this.generateConstanciaSeptimaAsignatura(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia-adicionales', nivel: 'licenciatura' }),
-
-// DOC005: Horarios de asignaturas posgrado
-'DOC005': () => 
-  this.generateHorarioAsignaturaPos(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'horarios', nivel: 'posgrado' }),
-
-// DOC006: Constancia de asignaturas posgrado
-'DOC006': () => 
-  this.generateConstanciaAsignaturaPos(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia', nivel: 'posgrado' }),
-
-// DOC007: Constancia modalidades de atención
-'DOC007': () => 
-  this.generateModalidadesAtencion(base, claveDocente, claveDepartamento, año),
-
-// DOC008: Constancia de tutorías PIT
-'DOC008': () => 
-  this.generateTutorias(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'pit' }),
-
-// DOC009: Constancia de acreditación programa
-'DOC009': () => 
-  this.generateAcreditacionProgramas(base, claveDocente, claveDepartamento, año),
-
-// DOC010: Constancia actividades complementarias
-'DOC010': () => 
-  this.generateActividadesComplementarias(base, claveDocente, claveDepartamento, año),
-
-// DOC011: Constancia proyecto integrador
-'DOC011': () => 
-  this.generateProyectosIntegradores(base, claveDocente, claveDepartamento, año),
-
-// DOC012: Constancia manual de prácticas
-'DOC012': () => 
-  this.generateManualesPracticas(base, claveDocente, claveDepartamento, año),
-
-// DOC013: Constancia estrategias didácticas
-'DOC013': () => 
-  this.generateEstrategiasDidacticas(base, claveDocente, claveDepartamento, año),
-
-// DOC014: Constancia materiales didácticos inclusivos
-'DOC014': () => 
-  this.generateMaterialesInclusivos(base, claveDocente, claveDepartamento, año),
-
-// DOC015: Comisión instructor cursos docentes
-'DOC015': () => 
-  this.generateComCursosCapacitacionDocente(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'comision', destinatarios: 'docentes' }),
-
-// DOC016: Constancia curso impartido
-'DOC016': () => 
-  this.generateConstCursosCapacitacion(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia', destinatarios: 'general' }),
-
-// DOC017: Comisión instructor cursos TecNM
-'DOC017': () => 
-  this.generateComisionInstructor(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'comision', destinatarios: 'tecnm' }),
-
-// DOC018: Constancia realización curso TecNM
-'DOC018': () => 
-  this.generateConstanciaCursoTecnm(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia', destinatarios: 'tecnm' }),
-
-// DOC019: Comisión Diplomado Pensamiento Crítico
-'DOC019': () => 
-  this.generateComisionDiplomados(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'comision', nombre: 'pensamiento-critico' }),
-
-// DOC020: Constancia Diplomado Pensamiento Crítico
-'DOC020': () => 
-  this.generateConstanciaDiplomados(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia', nombre: 'pensamiento-critico' }),
-
-// DOC021: Constancia Diplomado Formación Tutores
-'DOC021': () => 
-  this.generateDiplomadosFormacion(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia', nombre: 'formacion-tutores' }),
-
-// DOC022: Comisión Diplomado Recursos Educativos
-'DOC022': () => 
-  this.generateComisionDiplomadosRecursos(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'comision', nombre: 'recursos-educativos' }),
-
-// DOC023: Constancia Diplomado Recursos Educativos
-'DOC023': () => 
-  this.generateConstanciaDiplomadosRecursos(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia', nombre: 'recursos-educativos' }),
-
-// DOC024: Comisión Diplomado Educación Inclusiva
-'DOC024': () => 
-  this.generateComisionDiplomadosEducacion(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'comision', nombre: 'educacion-inclusiva' }),
-
-// DOC025: Constancia Diplomado Educación Inclusiva
-'DOC025': () => 
-  this.generateConstanciaDiplomadosEducacion(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'constancia', nombre: 'educacion-inclusiva' }),
-
-// DOC026: Comisión Diplomados estratégicos
-'DOC026': () => 
-  this.generateComisionDiplomadosEstrategico(base, claveDocente, claveDepartamento, año, 
-    { tipo: 'comision', nombre: 'estrategicos' }),
-
-// DOC027: Constancia Diplomados estratégicos
-    'DOC027': () => 
-      this.generateConstanciaDiplomadosEstrategico(base, claveDocente, claveDepartamento, año, 
-      { tipo: 'constancia', nombre: 'estrategicos' }),
-
-    // DOC028: Acta examen profesional/grado
-    'DOC028': () => 
-    this.generateActasExamen(base, claveDocente, claveDepartamento, año),
-
-    // DOC029: Convenio colaboración académica
-      'DOC029': () => 
-         this.generateConveniosAcademicos(base, claveDocente, claveDepartamento, año),
-
-      // DOC030: Constancia sinodal titulación
-      'DOC030': () => 
-       this.generateSinodalesTitulacion(base, claveDocente, claveDepartamento, año),
-
-      // DOC031: Programa asesoría ciencias básicas
-      'DOC031': () => 
-       this.generateProgramaAsesoriasCiencias(base, claveDocente, claveDepartamento, año, 
-         { tipo: 'programa' }),
-
-      // DOC032: Constancia asesoría ciencias básicas
-      'DOC032': () => 
+    const generation: Record<string, Generator> = {
+        // ========== DOCUMENTOS 1-32 ==========
+        // DOC001: Horarios de asignaturas licenciatura
+        'DOC001': () => 
+        this.generateHorarioAsignaturasLic(base, claveDocente, claveDepartamento, año, 
+        { tipo: 'horarios', nivel: 'licenciatura' }),
+        // DOC002: Constancia de asignaturas impartidas
+        'DOC002': () => 
+        this.generateConstanciaAsignaturaImp(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'constancia', nivel: 'licenciatura' }),
+        // DOC003: Horarios de asignatura adicional
+        'DOC003': () => 
+        this.generateHorarioAsignaturaAdi(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'horarios-adicionales', nivel: 'licenciatura' }),
+        // DOC004: Constancia de séptima asignatura
+        'DOC004': () => 
+        this.generateConstanciaSeptimaAsignatura(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'constancia-adicionales', nivel: 'licenciatura' }),
+        // DOC005: Horarios de asignaturas posgrado
+        'DOC005': () => 
+        this.generateHorarioAsignaturaPos(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'horarios', nivel: 'posgrado' }),
+        // DOC006: Constancia de asignaturas posgrado
+        'DOC006': () => 
+        this.generateConstanciaAsignaturaPos(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'constancia', nivel: 'posgrado' }),
+        // DOC007: Constancia modalidades de atención
+        'DOC007': () => 
+        this.generateModalidadesAtencion(base, claveDocente, claveDepartamento, año),
+        // DOC008: Constancia de tutorías PIT
+        'DOC008': () => 
+        this.generateTutorias(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'pit' }),
+        // DOC009: Constancia de acreditación programa
+        'DOC009': () => 
+        this.generateAcreditacionProgramas(base, claveDocente, claveDepartamento, año),
+        // DOC010: Constancia actividades complementarias
+        'DOC010': () => 
+        this.generateActividadesComplementarias(base, claveDocente, claveDepartamento, año),
+        // DOC011: Constancia proyecto integrador
+        'DOC011': () => 
+        this.generateProyectosIntegradores(base, claveDocente, claveDepartamento, año),
+        // DOC012: Constancia manual de prácticas
+        'DOC012': () => 
+        this.generateManualesPracticas(base, claveDocente, claveDepartamento, año),
+        // DOC013: Constancia estrategias didácticas
+        'DOC013': () => 
+        this.generateEstrategiasDidacticas(base, claveDocente, claveDepartamento, año),
+        // DOC014: Constancia materiales didácticos inclusivos
+        'DOC014': () => 
+        this.generateMaterialesInclusivos(base, claveDocente, claveDepartamento, año),
+        // DOC015: Comisión instructor cursos docentes
+        'DOC015': () => 
+        this.generateComCursosCapacitacionDocente(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'comision', destinatarios: 'docentes' }),
+        // DOC016: Constancia curso impartido
+        'DOC016': () => 
+        this.generateConstCursosCapacitacion(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'constancia', destinatarios: 'general' }),
+        // DOC017: Comisión instructor cursos TecNM
+        'DOC017': () => 
+        this.generateComisionInstructor(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'comision', destinatarios: 'tecnm' }),
+        // DOC018: Constancia realización curso TecNM
+        'DOC018': () => 
+        this.generateConstanciaCursoTecnm(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'constancia', destinatarios: 'tecnm' }),
+        // DOC019: Comisión Diplomado Pensamiento Crítico
+        'DOC019': () => 
+        this.generateComisionDiplomados(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'comision', nombre: 'pensamiento-critico' }),
+        // DOC020: Constancia Diplomado Pensamiento Crítico
+        'DOC020': () => 
+        this.generateConstanciaDiplomados(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'constancia', nombre: 'pensamiento-critico' }),
+        // DOC021: Constancia Diplomado Formación Tutores
+        'DOC021': () => 
+        this.generateDiplomadosFormacion(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'constancia', nombre: 'formacion-tutores' }),
+        // DOC022: Comisión Diplomado Recursos Educativos
+        'DOC022': () => 
+        this.generateComisionDiplomadosRecursos(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'comision', nombre: 'recursos-educativos' }),
+        // DOC023: Constancia Diplomado Recursos Educativos
+        'DOC023': () => 
+        this.generateConstanciaDiplomadosRecursos(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'constancia', nombre: 'recursos-educativos' }),
+        // DOC024: Comisión Diplomado Educación Inclusiva
+        'DOC024': () => 
+        this.generateComisionDiplomadosEducacion(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'comision', nombre: 'educacion-inclusiva' }),
+        // DOC025: Constancia Diplomado Educación Inclusiva
+        'DOC025': () => 
+        this.generateConstanciaDiplomadosEducacion(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'constancia', nombre: 'educacion-inclusiva' }),
+        // DOC026: Comisión Diplomados estratégicos
+        'DOC026': () => 
+        this.generateComisionDiplomadosEstrategico(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'comision', nombre: 'estrategicos' }),
+        // DOC027: Constancia Diplomados estratégicos
+        'DOC027': () => 
+        this.generateConstanciaDiplomadosEstrategico(base, claveDocente, claveDepartamento, año, 
+        { tipo: 'constancia', nombre: 'estrategicos' }),
+        // DOC028: Acta examen profesional/grado
+        'DOC028': () => 
+        this.generateActasExamen(base, claveDocente, claveDepartamento, año),
+        // DOC029: Convenio colaboración académica
+        'DOC029': () => 
+        this.generateConveniosAcademicos(base, claveDocente, claveDepartamento, año),
+        // DOC030: Constancia sinodal titulación
+        'DOC030': () => 
+        this.generateSinodalesTitulacion(base, claveDocente, claveDepartamento, año),
+        // DOC031: Programa asesoría ciencias básicas
+        'DOC031': () => 
+        this.generateProgramaAsesoriasCiencias(base, claveDocente, claveDepartamento, año, 
+            { tipo: 'programa' }),
+        // DOC032: Constancia asesoría ciencias básicas
+        'DOC032': () => 
         this.generateConstanciaAsesoriasCiencias(base, claveDocente, claveDepartamento, año, 
         { tipo: 'constancia' }),
+        // ========== Primera parte terminada ==========
 
-       // ========== Primera parte terminada ==========
-  
-
-
-
-      // DOC033: Comisión por asesoría en concursos
-      'DOC033': () => 
+        // DOC033: Comisión por asesoría en concursos
+        'DOC033': () => 
         this.generateAsesoriaConcursos(base, claveDocente, claveDepartamento, año, 
-          { tipo: 'comision', premiado: false }),
-      
-      // DOC034: Constancia por asesoría en concursos
-      'DOC034': () => 
+            { tipo: 'comision', premiado: false }),
+        
+        // DOC034: Constancia por asesoría en concursos
+        'DOC034': () => 
         this.generateAsesoriaConcursos(base, claveDocente, claveDepartamento, año, 
-          { tipo: 'constancia', premiado: false }),
-      
-      // DOC035: Comisión por asesoría en proyectos premiados en concurso
-      'DOC035': () => 
+            { tipo: 'constancia', premiado: false }),
+        
+        // DOC035: Comisión por asesoría en proyectos premiados en concurso
+        'DOC035': () => 
         this.generateAsesoriaConcursos(base, claveDocente, claveDepartamento, año, 
-          { tipo: 'comision', premiado: true }),
-      
-      // DOC036: Constancia por asesoría en proyectos premiados en concurso
-      'DOC036': () => 
+            { tipo: 'comision', premiado: true }),
+        
+        // DOC036: Constancia por asesoría en proyectos premiados en concurso
+        'DOC036': () => 
         this.generateAsesoriaConcursos(base, claveDocente, claveDepartamento, año, 
-          { tipo: 'constancia', premiado: true }),
-      
-      // DOC037: Comisión por colaboración en eventos
-      'DOC037': () => 
+            { tipo: 'constancia', premiado: true }),
+        
+        // DOC037: Comisión por colaboración en eventos
+        'DOC037': () => 
         this.generateColaboracionEventos(base, claveDocente, claveDepartamento, año, 'comision'),
-      
-      // DOC038: Constancia por colaboración en eventos
-      'DOC038': () => 
+        
+        // DOC038: Constancia por colaboración en eventos
+        'DOC038': () => 
         this.generateColaboracionEventos(base, claveDocente, claveDepartamento, año, 'constancia'),
-      
-      // DOC039: Comisión para participar como jurado en eventos
-      'DOC039': () => 
+        
+        // DOC039: Comisión para participar como jurado en eventos
+        'DOC039': () => 
         this.generateJuradoEventos(base, claveDocente, claveDepartamento, año, 'comision'),
-      
-      // DOC040: Constancia para participar como jurado en eventos
-      'DOC040': () => 
+        
+        // DOC040: Constancia para participar como jurado en eventos
+        'DOC040': () => 
         this.generateJuradoEventos(base, claveDocente, claveDepartamento, año, 'constancia'),
-      
-      // DOC041: Comisión para participar en comités de evaluación
-      'DOC041': () => 
+        
+        // DOC041: Comisión para participar en comités de evaluación
+        'DOC041': () => 
         this.generateComitesEvaluacion(base, claveDocente, claveDepartamento, año, 'comision'),
-      
-      // DOC042: Constancia para participar en comités de evaluación
-      'DOC042': () => 
+        
+        // DOC042: Constancia para participar en comités de evaluación
+        'DOC042': () => 
         this.generateComitesEvaluacion(base, claveDocente, claveDepartamento, año, 'constancia'),
-      
-      // DOC043: Comisión para auditorías
-      'DOC043': () => 
+        
+        // DOC043: Comisión para auditorías
+        'DOC043': () => 
         this.generateAuditorias(base, claveDocente, claveDepartamento, año, 'comision'),
-      
-      // DOC044: Constancia para auditorías
-      'DOC044': () => 
+        
+        // DOC044: Constancia para auditorías
+        'DOC044': () => 
         this.generateAuditorias(base, claveDocente, claveDepartamento, año, 'constancia'),
-      
-      // DOC045: Comisión para elaboración de planes y programas
-      'DOC045': () => 
+        
+        // DOC045: Comisión para elaboración de planes y programas
+        'DOC045': () => 
         this.generateElaboracionPlanes(base, claveDocente, claveDepartamento, año, 
-          { tipo: 'comision', nivel: 'null' }),
-      
-      // DOC046: Constancia para elaboración de planes y programas (local)
-      'DOC046': () => 
+            { tipo: 'comision', nivel: 'null' }),
+        
+        // DOC046: Constancia para elaboración de planes y programas (local)
+        'DOC046': () => 
         this.generateElaboracionPlanes(base, claveDocente, claveDepartamento, año, 
-          { tipo: 'constancia', nivel: 'local' }),
-      
-      // DOC047: Constancia para elaboración de planes y programas (nacional)
-      'DOC047': () => 
+            { tipo: 'constancia', nivel: 'local' }),
+        
+        // DOC047: Constancia para elaboración de planes y programas (nacional)
+        'DOC047': () => 
         this.generateElaboracionPlanes(base, claveDocente, claveDepartamento, año, 
-          { tipo: 'constancia', nivel: 'nacional' }),
-      
-      // DOC048: Comisión para la elaboración de módulos de especialidad
-      'DOC048': () => 
+            { tipo: 'constancia', nivel: 'nacional' }),
+        
+        // DOC048: Comisión para la elaboración de módulos de especialidad
+        'DOC048': () => 
         this.generateElaboracionModulos(base, claveDocente, claveDepartamento, año, 'comision'),
-      
-      // DOC049: Registro de modulos de especialidad
-      'DOC049': () => 
+        
+        // DOC049: Registro de modulos de especialidad
+        'DOC049': () => 
         this.generateElaboracionModulos(base, claveDocente, claveDepartamento, año, 'registro'),
-      
-      // DOC050: Constancia por la elaboracion de modulos de especialidad
-      'DOC050': () => 
+        
+        // DOC050: Constancia por la elaboracion de modulos de especialidad
+        'DOC050': () => 
         this.generateElaboracionModulos(base, claveDocente, claveDepartamento, año, 'constancia'),
-      
-      // DOC051: Comisión para la apertura de programas
-      'DOC051': () => 
+        
+        // DOC051: Comisión para la apertura de programas
+        'DOC051': () => 
         this.generateAperturaProgramas(base, claveDocente, claveDepartamento, año, 'comision'),
-      
-      // DOC052: Constancia para la apertura de programas
-      'DOC052': () => 
+        
+        // DOC052: Constancia para la apertura de programas
+        'DOC052': () => 
         this.generateAperturaProgramas(base, claveDocente, claveDepartamento, año, 'constancia'),
-      
-      // DOC053: Autorización para la apertura de programas
-      'DOC053': () => 
+        
+        // DOC053: Autorización para la apertura de programas
+        'DOC053': () => 
         this.generateAperturaProgramas(base, claveDocente, claveDepartamento, año, 'autorizacion'),
-      
-      // DOC054: Constancia de prestación de servicios docentes
-      'DOC054': () => 
+        
+            // DOC054: Constancia de prestación de servicios docentes
+        'DOC054': () => 
         this.generatePrestacionServicios(base, claveDocente, claveDepartamento),
-      
-      // DOC055: Carta de exclusividad laboral
-      'DOC055': () => 
+        
+        // DOC055: Carta de exclusividad laboral
+        'DOC055': () => 
         this.generatePrestacionServicios(base, claveDocente, claveDepartamento),
-      
-      // DOC056: Constancia de proyecto de investigación vigente
-      'DOC056': () => 
+        
+        // DOC056: Constancia de proyecto de investigación vigente
+        'DOC056': () => 
         this.generateProyectoInvestigacion(base, claveDocente, claveDepartamento, año),
-      
-      // DOC057: Curriculum vitae
-      'DOC057': () => 
+        
+        // DOC057: Curriculum vitae
+        'DOC057': () => 
         this.generateCurriculumVitae(base, claveDocente, claveDepartamento),
-      
-      // DOC058: Licencias especiales
-      'DOC058': () => 
+        
+        // DOC058: Licencias especiales
+        'DOC058': () => 
         this.generateLicenciasEspeciales(base, claveDocente, claveDepartamento, año),
-      
-      // DOC059: Constancias de cumplimiento de actividades
-      'DOC059': () => 
+        
+        // DOC059: Constancias de cumplimiento de actividades
+        'DOC059': () => 
         this.generateCumplimientoActividades(base, claveDocente, claveDepartamento, año, 'semestre'),
-      
-      // DOC060: Carta de liberación de actividades
-      'DOC060': () => 
+        
+        // DOC060: Carta de liberación de actividades
+        'DOC060': () => 
         this.generateCumplimientoActividades(base, claveDocente, claveDepartamento, año, 'anual'),
-      
-      // DOC061: Evaluación departamental nivel licenciatura
-      'DOC061': () => 
+        
+        // DOC061: Evaluación departamental nivel licenciatura
+        'DOC061': () => 
         this.generateEvaluaciones(base, claveDocente, claveDepartamento, año, 'departamental'),
-      
-      // DOC062: Evaluación departamental nivel posgrado
-      'DOC062': () => 
+        
+        // DOC062: Evaluación departamental nivel posgrado
+        'DOC062': () => 
         this.generateEvaluaciones(base, claveDocente, claveDepartamento, año, 'desempeño'),
-      
-      // DOC063: Evaluación de desempeño docente
-      'DOC063': () => 
+        
+        // DOC063: Evaluación de desempeño docente
+        'DOC063': () => 
         this.generateEvaluaciones(base, claveDocente, claveDepartamento, año, 'departamental'),
+    };
+
+    this.logger.log(`[GENERATE_EXPEDIENTE] Total de tipos de documentos disponibles: ${Object.keys(generation).length}`);
+
+    // Obtener todos los departamentos
+    this.logger.log(`[GENERATE_EXPEDIENTE] Obteniendo lista de departamentos...`);
+    let departamentos;
+    try {
+        departamentos = await this.getAllDepartmentIds();
+        this.logger.log(`[GENERATE_EXPEDIENTE] Departamentos obtenidos: ${departamentos?.length || 0}`);
+        if (departamentos && departamentos.length > 0) {
+        this.logger.log(`[GENERATE_EXPEDIENTE] IDs de departamentos: ${JSON.stringify(departamentos)}`);
+        }
+    } catch (error) {
+        this.logger.error(`[GENERATE_EXPEDIENTE] Error al obtener departamentos:`, error);
+        departamentos = [];
     }
-    const departamentos = await this.getAllDepartmentIds();
+    
+    // Procesar cada departamento
+    this.logger.log(`[GENERATE_EXPEDIENTE] Iniciando procesamiento por departamentos...`);
+    let departamentosProcesados = 0;
+    let totalDocumentosGenerados = 0;
     
     for (const dep of departamentos) {
-      claveDepartamento = dep ?? (await this.getDepartmentByProfessorId(claveDocente));
-      const result = await this.getFilesByDepartment(claveDocente, claveDepartamento, año, generation);
-
-      if (result && result.length > 0) {
-        documentos.push(...result);
-        this.logger.log(`Generados ${result.length} documentos del departamento ${claveDepartamento}`);
-      }
+        departamentosProcesados++;
+        this.logger.log(`[GENERATE_EXPEDIENTE] ===== Procesando departamento ${departamentosProcesados}/${departamentos.length} =====`);
+        
+        try {
+        claveDepartamento = dep ?? (await this.getDepartmentByProfessorId(claveDocente));
+        this.logger.log(`[GENERATE_EXPEDIENTE] Clave departamento: ${claveDepartamento}`);
+        
+        this.logger.log(`[GENERATE_EXPEDIENTE] Llamando a getFilesByDepartment...`);
+        const result = await this.getFilesByDepartment(claveDocente, claveDepartamento, año, generation);
+        
+        if (result && result.length > 0) {
+            documentos.push(...result);
+            totalDocumentosGenerados += result.length;
+            this.logger.log(`[GENERATE_EXPEDIENTE] ✅ Generados ${result.length} documentos del departamento ${claveDepartamento}`);
+            
+            // Log detallado de los documentos generados
+            for (let index = 0; index < result.length; index++) {
+            const doc = result[index];
+            let nombreDocumento = 'Sin nombre';
+            
+            try {
+                // Intentar obtener el nombre del documento desde la BD
+                if (doc.claveDocumento) {
+                const nombre = await this.getDocumentNameById(doc.claveDocumento);
+                nombreDocumento = nombre || `${doc.claveDocumento} (sin nombre en BD)`;
+                }
+            } catch (error) {
+                this.logger.warn(`[GENERATE_EXPEDIENTE] No se pudo obtener nombre para documento ${doc.claveDocumento}`);
+                nombreDocumento = doc.claveDocumento || 'Sin clave';
+            }
+            
+            this.logger.log(`[GENERATE_EXPEDIENTE]   - Documento ${index + 1}: ${nombreDocumento}'}`);
+            }
+        } else {
+            this.logger.warn(`[GENERATE_EXPEDIENTE] ⚠️ No se generaron documentos para el departamento ${claveDepartamento}`);
+        }
+        } catch (error) {
+        this.logger.error(`[GENERATE_EXPEDIENTE] ❌ Error procesando departamento ${dep}:`, error);
+        this.logger.error(`[GENERATE_EXPEDIENTE] Stack trace:`, error.stack);
+        }
     }
-
+    
+    this.logger.log(`[GENERATE_EXPEDIENTE] ===== RESUMEN DE GENERACIÓN =====`);
+    this.logger.log(`[GENERATE_EXPEDIENTE] Departamentos procesados: ${departamentosProcesados}`);
+    this.logger.log(`[GENERATE_EXPEDIENTE] Total de documentos generados: ${totalDocumentosGenerados}`);
+    this.logger.log(`[GENERATE_EXPEDIENTE] Documentos en array final: ${documentos.length}`);
+    
+    // Crear objeto expediente
     const expediente: Expediente = {
-      claveExpediente: claveExpediente ,
-      añoGeneracion: añoGeneracion,
-      claveDocente: claveDocente,
-      documentos: documentos
+        claveExpediente: claveExpediente,
+        añoGeneracion: añoGeneracion,
+        claveDocente: claveDocente,
+        documentos: documentos
+    };
+    
+    this.logger.log(`[GENERATE_EXPEDIENTE] Expediente creado:`, {
+        claveExpediente: expediente.claveExpediente,
+        añoGeneracion: expediente.añoGeneracion,
+        claveDocente: expediente.claveDocente,
+        totalDocumentos: expediente.documentos.length
+    });
+    
+    // Insertar expediente en base de datos
+    try {
+        this.logger.log(`[GENERATE_EXPEDIENTE] Insertando expediente en base de datos...`);
+        await this.insertExpediente(expediente);
+        this.logger.log(`[GENERATE_EXPEDIENTE] ✅ Expediente insertado exitosamente`);
+    } catch (error) {
+        this.logger.error(`[GENERATE_EXPEDIENTE] ❌ Error al insertar expediente:`, error);
+        throw error;
     }
-
-    await this.insertExpediente(expediente);
-    await this.insertGeneratedDocuments(documentos, claveExpediente);
+    
+    // Insertar documentos generados
+    if (documentos.length > 0) {
+        try {
+        this.logger.log(`[GENERATE_EXPEDIENTE] Insertando ${documentos.length} documentos en base de datos...`);
+        await this.insertGeneratedDocuments(documentos, claveExpediente);
+        this.logger.log(`[GENERATE_EXPEDIENTE] ✅ Documentos insertados exitosamente`);
+        } catch (error) {
+        this.logger.error(`[GENERATE_EXPEDIENTE] ❌ Error al insertar documentos:`, error);
+        throw error;
+        }
+    } else {
+        this.logger.warn(`[GENERATE_EXPEDIENTE] ⚠️ No hay documentos para insertar`);
+    }
+    
+    this.logger.log(`[GENERATE_EXPEDIENTE] ====== GENERACIÓN DE EXPEDIENTE COMPLETADA ======`);
+    this.logger.log(`[GENERATE_EXPEDIENTE] Resultado final:`, {
+        claveExpediente: expediente.claveExpediente,
+        documentosGenerados: expediente.documentos.length,
+        exitoso: expediente.documentos.length > 0
+    });
     
     return expediente;
   }
- 
+
+  /**
+ * Obtener expedientes por clave de usuario
+ * @param claveUsuario string
+ * @returns Array de expedientes con información completa
+ */
+  async getExpedientesByClaveUsuario(claveUsuario: string) {
+    try {
+        const user = await this.usersService.findByClaveUsuario(claveUsuario);
+        
+        if (!user) {
+        throw new NotFoundException(`Usuario con clave ${claveUsuario} no encontrado`);
+        }
+        
+        if (user.tipoUsuario !== 'DOCENTE' || !user.docente?.claveDocente) {
+        this.logger.warn(`Usuario ${claveUsuario} no es docente o no tiene claveDocente`);
+        return [];
+        }
+        
+        const claveDocente = user.docente.claveDocente;
+        this.logger.log(`Obteniendo expedientes para docente: ${claveDocente}`);
+        
+        const pool = this.mssql.getPool();
+        const result = await pool
+        .request()
+        .input('ClaveDocente', claveDocente)
+        .query(`
+            SELECT 
+            e.ClaveExpediente,
+            e.AñoGeneracion,
+            e.ClaveDocente,
+            -- Información del docente
+            d.Nombre AS NombreDocente,
+            d.ApellidoPaterno,
+            d.ApellidoMaterno,
+            -- Contar documentos asociados
+            (
+                SELECT COUNT(*) 
+                FROM DocumentoGenerado dg 
+                WHERE dg.ClaveExpediente = e.ClaveExpediente
+            ) AS TotalDocumentos
+            FROM Expediente e
+            INNER JOIN Docente d ON e.ClaveDocente = d.ClaveDocente
+            WHERE e.ClaveDocente = @ClaveDocente
+            ORDER BY e.AñoGeneracion DESC
+        `);
+        
+        const expedientes = result.recordset.map(exp => ({
+        claveExpediente: exp.ClaveExpediente,
+        añoGeneracion: exp.AñoGeneracion,
+        claveDocente: exp.ClaveDocente,
+        nombreDocente: `${exp.NombreDocente} ${exp.ApellidoPaterno} ${exp.ApellidoMaterno}`.trim(),
+        totalDocumentos: exp.TotalDocumentos || 0,
+        claveUsuario: claveUsuario,
+        departamento: user.docente.departamento
+        }));
+        
+        this.logger.log(`Se encontraron ${expedientes.length} expedientes para el usuario ${claveUsuario}`);
+        return expedientes;
+        
+    } catch (error) {
+        this.logger.error(`Error al obtener expedientes para usuario ${claveUsuario}:`, error);
+        throw error;
+    }
+  }
   
 
   /**
-   * Obtener documentos por departamento
-   * @param claveDepartamento string
-   * @param año number
-   * @param claveDocente string
-   */
+  * Obtener documentos por departamento
+  * @param claveDepartamento string
+  * @param año number
+  * @param claveDocente string
+  */
   async getFilesByDepartment(
     claveDocente: string, 
     claveDepartamento: string, 
     año: number, 
     generation: Record<string, Generator>
     ): Promise<FileInterfaces.GeneratedFile[]> {
-
-    const base: FileInterfaces.Base = {
+    try {
+        this.logger.log(`[GET_FILES_BY_DEPT] Iniciando para departamento: ${claveDepartamento}`);
+        
+        // Obtener información base
+        const base: FileInterfaces.Base = {
         docente: await this.getProfessorNameById(claveDocente),
         titular: await this.getDepartmentHeadById(claveDepartamento),
         departamento: await this.getDepartmentNameById(claveDepartamento),
         claveDepartamento: claveDepartamento,
-      };
-
-    const files = await this.getDocumentsByDepartment(claveDepartamento);
-    const docs: FileInterfaces.GeneratedFile[] = [];
-
-    for (const f of files) {
-      const result = await generation[f.documento]?.(base, claveDocente, claveDepartamento, año);
-      if (result && result.length > 0) {
-        docs.push(...result);
-      }
+        };
+        
+        this.logger.log(`[GET_FILES_BY_DEPT] Base creada:`, {
+        docente: base.docente,
+        titular: base.titular,
+        departamento: base.departamento
+        });
+        
+        // Obtener claves de documentos para este departamento
+        const documentKeys = await this.getDocumentsByDepartment(claveDepartamento);
+        this.logger.log(`[GET_FILES_BY_DEPT] Documentos a generar: ${documentKeys.length}`);
+        this.logger.log(`[GET_FILES_BY_DEPT] Claves: ${JSON.stringify(documentKeys)}`);
+        
+        const docs: FileInterfaces.GeneratedFile[] = [];
+        
+        for (const claveDocumento of documentKeys) {
+        try {
+            // Verificar si existe un generador para esta clave
+            if (!generation[claveDocumento]) {
+            this.logger.warn(`[GET_FILES_BY_DEPT] No existe generador para: ${claveDocumento}`);
+            continue;
+            }
+            
+            this.logger.log(`[GET_FILES_BY_DEPT] Generando documento: ${claveDocumento}`);
+            
+            // Llamar al generador - NOTA: Los generadores no usan todos los mismos parámetros
+            const result = await generation[claveDocumento](base, claveDocente, claveDepartamento, año);
+            
+            if (result && Array.isArray(result) && result.length > 0) {
+            docs.push(...result);
+            this.logger.log(`[GET_FILES_BY_DEPT] ✅ Generados ${result.length} archivos para ${claveDocumento}`);
+            } else if (result && !Array.isArray(result)) {
+            // Si el generador retorna un solo documento, convertir a array
+            docs.push(result);
+            this.logger.log(`[GET_FILES_BY_DEPT] ✅ Generado 1 archivo para ${claveDocumento}`);
+            } else {
+            this.logger.warn(`[GET_FILES_BY_DEPT] ⚠️ Sin resultados para ${claveDocumento}`);
+            }
+        } catch (error) {
+            this.logger.error(`[GET_FILES_BY_DEPT] Error generando ${claveDocumento}:`, error);
+        }
+        }
+        
+        this.logger.log(`[GET_FILES_BY_DEPT] Total documentos generados: ${docs.length}`);
+        return docs;
+        
+    } catch (error) {
+        this.logger.error(`[GET_FILES_BY_DEPT] Error general:`, error);
+        throw error;
     }
-    
-    return docs;
   }
 
   // ========== MÉTODOS AUXILIARES ==========
   /**
-   * Verificar si un docente solo tiene asignaturas posgrado
-   * @param claveDocente string
-   * @param claveDepartamento string
-   * @param año number
-   * @param semeste string
-   */
+     * Verificar si un docente solo tiene asignaturas posgrado
+     * @param claveDocente string
+     * @param claveDepartamento string
+     * @param año number
+     * @param semestre string
+     */
   async checkCourses(
     claveDocente: string,
     claveDepartamento: string,
     año: number,
-    semeste: string
-  ): Promise<boolean> {
-
+    semestre: string
+    ): Promise<boolean> {
     const pool = this.dynamicDb.executeQueryByDepartmentId(
-      claveDepartamento,
-      `SELECT ad.ClaveDocente
-       FROM Asignatura_Docente ad
-       INNER JOIN Asignatura a ON a.ClaveAsignatura = ad.ClaveAsignatura
-       WHERE ad.ClaveDocente = @ClaveDocente
-          AND a.Nivel = 'POSGRADO'
-          AND ad.Año = @Año
-          AND ad.Semestre = @Semestre
-      GROUP BY ad.ClaveDocente
-      HAVING COUNT(*) = (
-          SELECT COUNT(*) 
-          FROM Asignatura_Docente 
-          WHERE ClaveDocente = @ClaveDocente
+        claveDepartamento,
+        `SELECT ad.ClaveDocente
+        FROM Asignatura_Docente ad
+        INNER JOIN Asignatura a ON a.ClaveAsignatura = ad.ClaveAsignatura
+        WHERE ad.ClaveDocente = @ClaveDocente
+            AND a.Nivel = 'POSGRADO'
+            AND ad.Año = @Año
+            AND ad.Semestre = @Semestre
+        GROUP BY ad.ClaveDocente
+        HAVING COUNT(*) = (
+            SELECT COUNT(*) 
+            FROM Asignatura_Docente 
+            WHERE ClaveDocente = @ClaveDocente
             AND Año = @Año
-            AND Semestre = @Semestre`,
-      [{ name: 'ClaveDocente', value: claveDocente },
-      { name: 'Año', value: año },
-      { name: 'Semestre', value: semeste }]
+            AND Semestre = @Semestre
+        )`,
+        [
+        { name: 'ClaveDocente', value: claveDocente },
+        { name: 'Año', value: año },
+        { name: 'Semestre', value: semestre }
+        ]
     );
-
     return (await pool).length > 0;
   }
 
@@ -525,19 +696,20 @@ export class FilesService {
    */
   async deleteExpedienteIfExists(claveExpediente: string) {
     const pool = this.mssql.getPool();
-    await pool
-      .request()
-      .input('ClaveExpediente', claveExpediente)
-      .query(`
-        DELETE FROM Expediente
-        WHERE ClaveExpediente = @ClaveExpediente
-      `);
-
+    
     await pool
       .request()
       .input('ClaveExpediente', claveExpediente)
       .query(`
         DELETE FROM DocumentoGenerado
+        WHERE ClaveExpediente = @ClaveExpediente
+      `);
+    
+    await pool
+      .request()
+      .input('ClaveExpediente', claveExpediente)
+      .query(`
+        DELETE FROM Expediente
         WHERE ClaveExpediente = @ClaveExpediente
       `);
   }
@@ -628,14 +800,20 @@ export class FilesService {
    */
   async getDepartmentIdByName(nombreDepartamento: string) {
     const pool = this.mssql.getPool();
+    
+    // Normalizar el nombre para búsqueda
+    const normalizedName = nombreDepartamento.trim().toLowerCase();
+    
     const result = await pool
       .request()
-      .input('NombreDepartamento', `%${nombreDepartamento}%`)
+      .input('NombreDepartamento', `%${normalizedName}%`)
       .query(`
-        SELECT ClaveDepartamento AS claveDepartamento
+        SELECT TOP 1 ClaveDepartamento AS claveDepartamento
         FROM Departamento
-        WHERE Nombre LIKE @NombreDepartamento
+        WHERE LOWER(Nombre) LIKE @NombreDepartamento
+        ORDER BY LEN(Nombre) ASC  -- Priorizar coincidencias más cortas (más exactas)
       `);
+    
     return result.recordset[0]?.claveDepartamento || null;
   }
 

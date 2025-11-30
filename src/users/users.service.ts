@@ -66,7 +66,6 @@ export class UsersService {
     const userInfo: any = {
         claveUsuario: user.ClaveUsuario,
         correo: user.Correo,
-        contrasena: user.Contrasena,
         rol: user.Rol,
     };
     

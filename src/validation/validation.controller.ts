@@ -46,7 +46,9 @@ export class ValidationController {
         };
       }
 
-      const requisitos = await this.validationService.requisitosIniciales(user.ClaveDocente);
+      this.logger.log(`Usuario encontrado: ${user.claveUsuario}, ClaveDocente: ${user.docente?.claveDocente}`);
+
+      const requisitos = await this.validationService.requisitosIniciales(user.docente?.claveDocente);
       
       // Calcular estadísticas
       const totalRequisitos = requisitos.length;
@@ -58,7 +60,7 @@ export class ValidationController {
       const validationStatus: ValidationStatus = {
         claveUsuario,
         claveDocente: user.ClaveDocente,
-        nombreDocente: `${user.Nombre || ''} ${user.ApellidoPaterno || ''} ${user.ApellidoMaterno || ''}`.trim(),
+        nombreDocente: user.nombreCompleto,
         totalRequisitos,
         requisitosCumplidos,
         porcentajeCumplimiento,

@@ -69,7 +69,7 @@ export class FilesService {
     this.logger.log(`[GENERATE_EXPEDIENTE] Clave Docente: ${claveDocente}`);
     
     const añoGeneracion = new Date().getFullYear();
-    const año = añoGeneracion;
+    const año = añoGeneracion - 1;
     const claveExpediente = `${claveDocente}-${añoGeneracion}`;
     
     this.logger.log(`[GENERATE_EXPEDIENTE] Año de generación: ${añoGeneracion}`);
@@ -301,11 +301,11 @@ export class FilesService {
         
         // DOC062: Evaluación departamental nivel posgrado
         'DOC062': () => 
-        this.generateEvaluaciones(base, claveDocente, claveDepartamento, año, 'desempeño'),
+        this.generateEvaluaciones(base, claveDocente, claveDepartamento, año, 'departamental'),
         
         // DOC063: Evaluación de desempeño docente
         'DOC063': () => 
-        this.generateEvaluaciones(base, claveDocente, claveDepartamento, año, 'departamental'),
+        this.generateEvaluaciones(base, claveDocente, claveDepartamento, año, 'desempeño'),
     };
 
     this.logger.log(`[GENERATE_EXPEDIENTE] Total de tipos de documentos disponibles: ${Object.keys(generation).length}`);
@@ -694,13 +694,13 @@ export class FilesService {
       .request()
       .input('ClaveDepartamento', claveDepartamento)
       .query(`
-        SELECT ClaveDocumento as claveDocumento
-        FROM SAPEDD.dbo.Actividad_Documento
+        SELECT DISTINCT ClaveDocumento as claveDocumento
+        FROM Actividad_Documento
         WHERE ClaveDepartamento = @ClaveDepartamento
             OR (ClaveDepartamento IS NULL 
                 AND NOT EXISTS (
                     SELECT 1 
-                    FROM SAPEDD.dbo.Actividad_Documento 
+                    FROM Actividad_Documento 
                     WHERE ClaveDepartamento = @ClaveDepartamento
                 )
             )

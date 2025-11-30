@@ -499,6 +499,71 @@ export class FilesService {
     }
   }
 
+  /**
+ * Obtener expedientes por clave de usuario
+ * @param claveUsuario string
+ * @returns Array de expedientes con información completa
+ */
+  async getExpedientesByClaveUsuario(claveUsuario: string) {
+    try {
+        const user = await this.usersService.findByClaveUsuario(claveUsuario);
+        
+        if (!user) {
+        throw new NotFoundException(`Usuario con clave ${claveUsuario} no encontrado`);
+        }
+        
+        if (user.tipoUsuario !== 'DOCENTE' || !user.docente?.claveDocente) {
+        this.logger.warn(`Usuario ${claveUsuario} no es docente o no tiene claveDocente`);
+        return [];
+        }
+        
+        const claveDocente = user.docente.claveDocente;
+        this.logger.log(`Obteniendo expedientes para docente: ${claveDocente}`);
+        
+        const pool = this.mssql.getPool();
+        const result = await pool
+        .request()
+        .input('ClaveDocente', claveDocente)
+        .query(`
+            SELECT 
+            e.ClaveExpediente,
+            e.AñoGeneracion,
+            e.ClaveDocente,
+            -- Información del docente
+            d.Nombre AS NombreDocente,
+            d.ApellidoPaterno,
+            d.ApellidoMaterno,
+            -- Contar documentos asociados
+            (
+                SELECT COUNT(*) 
+                FROM DocumentoGenerado dg 
+                WHERE dg.ClaveExpediente = e.ClaveExpediente
+            ) AS TotalDocumentos
+            FROM Expediente e
+            INNER JOIN Docente d ON e.ClaveDocente = d.ClaveDocente
+            WHERE e.ClaveDocente = @ClaveDocente
+            ORDER BY e.AñoGeneracion DESC
+        `);
+        
+        const expedientes = result.recordset.map(exp => ({
+        claveExpediente: exp.ClaveExpediente,
+        añoGeneracion: exp.AñoGeneracion,
+        claveDocente: exp.ClaveDocente,
+        nombreDocente: `${exp.NombreDocente} ${exp.ApellidoPaterno} ${exp.ApellidoMaterno}`.trim(),
+        totalDocumentos: exp.TotalDocumentos || 0,
+        claveUsuario: claveUsuario,
+        departamento: user.docente.departamento
+        }));
+        
+        this.logger.log(`Se encontraron ${expedientes.length} expedientes para el usuario ${claveUsuario}`);
+        return expedientes;
+        
+    } catch (error) {
+        this.logger.error(`Error al obtener expedientes para usuario ${claveUsuario}:`, error);
+        throw error;
+    }
+  }
+
   // ========== MÉTODOS AUXILIARES ==========
   /**
      * Verificar si un docente solo tiene asignaturas posgrado

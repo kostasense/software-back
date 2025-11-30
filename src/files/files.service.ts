@@ -443,7 +443,10 @@ export class FilesService {
         
         // Obtener información base
         const base: FileInterfaces.Base = {
-        docente: await this.getProfessorNameById(claveDocente),
+        docente: {
+        ...(await this.getProfessorDetails(claveDocente)),
+        nombreCompleto: await this.getProfessorNameById(claveDocente)
+        },
         titular: await this.getDepartmentHeadById(claveDepartamento),
         departamento: await this.getDepartmentNameById(claveDepartamento),
         claveDepartamento: claveDepartamento,
@@ -473,6 +476,7 @@ export class FilesService {
             this.logger.log(`[GET_FILES_BY_DEPT] Generando documento: ${claveDocumento}`);
             
             // Llamar al generador - NOTA: Los generadores no usan todos los mismos parámetros
+            base.claveDocumento = claveDocumento;
             const result = await generation[claveDocumento](base, claveDocente, claveDepartamento, año);
             
             if (result && Array.isArray(result) && result.length > 0) {
@@ -565,6 +569,34 @@ export class FilesService {
   }
 
   // ========== MÉTODOS AUXILIARES ==========
+  /**
+   * Obtener datos completos del docente
+   * @param claveDocente string
+   */
+  async getProfessorDetails(claveDocente: string): Promise<FileInterfaces.Docente> {
+    const result = await this.dynamicDb.executeQueryByDepartmentId(
+      claveDocente,
+      `SELECT 
+          FechaIngreso AS fechaIngreso,
+          FechaIngresoSEP AS fechaIngresoSEP,
+          CONCAT(ClavePresupuestal, '-', Categoria) as clave,
+          Estatus AS nombramiento
+      FROM Docente 
+      WHERE ClaveDocente = @ClaveDocente`,
+      [{ name: 'ClaveDocente', value: claveDocente }]
+    );
+
+    const data: FileInterfaces.Docente = {
+      clave: claveDocente,
+      clavePresupuestal: result[0]?.clave || null,
+      nombramiento: result[0]?.nombramiento || null,
+      fechaIngreso: result[0]?.fechaIngreso || null,
+      fechaIngresoSEP: result[0]?.fechaIngresoSEP || null,
+    }
+
+    return data;
+  }
+
   /**
      * Verificar si un docente solo tiene asignaturas posgrado
      * @param claveDocente string

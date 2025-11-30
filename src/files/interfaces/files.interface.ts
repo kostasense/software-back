@@ -1,11 +1,10 @@
 export type Docente = {
-    nombreCompleto: string;
-    clave: string;
-    nombramiento: string;
-    fechaIngreso: Date;
-    fechaIngresoSEP: Date;
-    plaza: string;
-    clavePresupuestal: string;
+    nombreCompleto?: string | null;
+    clave: string | null;
+    nombramiento: string | null;
+    fechaIngreso: Date | null;
+    fechaIngresoSEP: Date | null;
+    clavePresupuestal: string | null;
 }
 
 export interface Base {

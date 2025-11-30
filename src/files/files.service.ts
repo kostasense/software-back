@@ -2063,7 +2063,7 @@ export class FilesService {
             FechaInicio AS fechaInicio,
             FechaFin AS fechaFin,
             HorasDuracion AS duracion,
-            DocentesBeneficiados AS docentesBeneficiados
+            TotalDocentes AS docentesBeneficiados
         FROM Curso
         WHERE ClaveDocente = @ClaveDocente
             AND YEAR(FechaInicio) = @Año
@@ -2123,7 +2123,7 @@ export class FilesService {
         FROM InstructorDiplomado
         WHERE ClaveDocente = @ClaveDocente
             AND YEAR(FechaInicio) = @Año
-            AND d.ClaveDiplomado NOT IN (
+            AND ClaveDiplomado NOT IN (
               SELECT ClaveDiplomado
               FROM Diplomado_ProyectoEstrategico
             )`

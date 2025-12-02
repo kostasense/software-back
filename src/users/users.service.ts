@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MssqlService } from '@strongnguyen/nestjs-mssql';
 import { DynamicDatabaseService } from '../database/dynamic-database.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -134,40 +135,53 @@ export class UsersService {
     return result.recordset;
   }
 
-  async changePassword(claveUsuario: string, oldPassword: string, newPassword: string): Promise<boolean> {
+  async changePassword(
+    claveUsuario: string,
+    oldPassword: string,
+    newPassword: string
+  ): Promise<{ success: boolean; message: string }> {
     try {
         const pool = this.mssql.getPool();
-        
-        // Verificar contraseña actual
-        const user = await pool
+
+        const result = await pool
         .request()
         .input('ClaveUsuario', claveUsuario)
-        .input('Contrasena', oldPassword)
         .query(`
-            SELECT ClaveUsuario 
-            FROM Usuario 
-            WHERE ClaveUsuario = @ClaveUsuario 
-            AND Contrasena = @Contrasena
+            SELECT Contrasena 
+            FROM Usuario
+            WHERE ClaveUsuario = @ClaveUsuario
         `);
-        
-        if (!user.recordset[0]) {
-        return false; // Contraseña actual incorrecta
+
+        const dbPassword = result.recordset[0]?.Contrasena;
+
+        if (!dbPassword) {
+        return { success: false, message: 'Usuario no encontrado' };
         }
-        
-        // Actualizar contraseña
+
+        const isMatch = await bcrypt.compare(oldPassword, dbPassword);
+
+        if (!isMatch) {
+        return { success: false, message: 'La contraseña actual es incorrecta' };
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
         await pool
         .request()
         .input('ClaveUsuario', claveUsuario)
-        .input('NuevaContrasena', newPassword)
+        .input('NuevaContrasena', hashedPassword)
         .query(`
             UPDATE Usuario 
-            SET Contrasena = @NuevaContrasena 
+            SET Contrasena = @NuevaContrasena
             WHERE ClaveUsuario = @ClaveUsuario
         `);
-        
-        return true;
+
+        return { success: true, message: 'Contraseña modificada con éxito' };
+
     } catch (error) {
-        throw error;
+        console.error(error);
+        throw new Error('Error al cambiar la contraseña');
     }
   }
 

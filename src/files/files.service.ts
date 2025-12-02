@@ -67,13 +67,21 @@ export class FilesService {
   }
 
   /**
- * Generar expediente
- * @param claveDocente string
- */
+   * Generar expediente en MODO DE PRUEBA
+   * No genera documentos reales, solo simula el flujo y hace los inserts necesarios
+   * @param claveDocente string
+   * @param testMode boolean - Activar modo de prueba (default: true para testing)
+   */
   async generateExpediente(
-    claveDocente: string
+      claveDocente: string,
+      testMode: boolean = false
   ): Promise<Expediente> {
     this.logger.log(`[GENERATE_EXPEDIENTE] ====== INICIANDO GENERACIÓN DE EXPEDIENTE ======`);
+    
+    if (testMode) {
+        this.logger.warn(`[GENERATE_EXPEDIENTE] 🧪 MODO DE PRUEBA ACTIVADO - No se generarán documentos reales`);
+    }
+    
     this.logger.log(`[GENERATE_EXPEDIENTE] Clave Docente: ${claveDocente}`);
     
     const añoGeneracion = new Date().getFullYear();
@@ -92,96 +100,96 @@ export class FilesService {
     let documentos: DocumentoConMetadatos[] = [];
     
     const generation: Record<string, Generator> = {
-      // DOC001: Horarios
-      'DOC001': () =>
+        // DOC001: Horarios
+        'DOC001': () =>
         this.generateHorariosAsignaturas(base, claveDocente, claveDepartamento, año),
 
-      // DOC002: Constancia de asignaturas impartidas
-      'DOC002': () =>
+        // DOC002: Constancia de asignaturas impartidas
+        'DOC002': () =>
         this.generateConstanciaAsignaturas(base, claveDocente, claveDepartamento, año),
 
-      // DOC008: Constancia de tutorías PIT
-      'DOC008': () =>
+        // DOC008: Constancia de tutorías PIT
+        'DOC008': () =>
         this.generateTutorias(base, claveDocente, claveDepartamento, año),
 
-      // DOC009: Constancia de acreditación de programas
-      'DOC009': () =>
+        // DOC009: Constancia de acreditación de programas
+        'DOC009': () =>
         this.generateAcreditacionProgramas(base, claveDocente, claveDepartamento),
 
-      // DOC010: Constancia de actividades complementarias
-      'DOC010': () =>
+        // DOC010: Constancia de actividades complementarias
+        'DOC010': () =>
         this.generateActividadesComplementarias(base, claveDocente, claveDepartamento, año),
 
-      // DOC011: Constancia de proyecto integrador
-      'DOC011': () =>
+        // DOC011: Constancia de proyecto integrador
+        'DOC011': () =>
         this.generateProyectoIntegrador(base, claveDocente, claveDepartamento, año),
 
-      // DOC012: Constancia manual de prácticas
-      'DOC012': () =>
+        // DOC012: Constancia manual de prácticas
+        'DOC012': () =>
         this.generateConstanciasElaboracionMaterial(base, claveDocente, claveDepartamento, año, 'manual'),
 
-      // DOC013: Constancia estrategias didácticas
-      'DOC013': () =>
+        // DOC013: Constancia estrategias didácticas
+        'DOC013': () =>
         this.generateConstanciasElaboracionMaterial(base, claveDocente, claveDepartamento, año, 'estrategias'),
 
-      // DOC014: Constancia materiales didácticos inclusivos
-      'DOC014': () =>
+        // DOC014: Constancia materiales didácticos inclusivos
+        'DOC014': () =>
         this.generateConstanciasElaboracionMaterial(base, claveDocente, claveDepartamento, año, 'materiales'),
 
-      // DOC015: Comisión por instructor de cursos para docentes
-      'DOC015': () =>
+        // DOC015: Comisión por instructor de cursos para docentes
+        'DOC015': () =>
         this.generateCursosImpartidos(base, claveDocente, claveDepartamento, año,
-          { tipo: 'comision', origen: 'tecnológico'}),
+            { tipo: 'comision', origen: 'tecnológico'}),
 
-      // DOC016: Constancia por instructor de cursos para docentes
-      'DOC016': () =>
+        // DOC016: Constancia por instructor de cursos para docentes
+        'DOC016': () =>
         this.generateCursosImpartidos(base, claveDocente, claveDepartamento, año,
-          { tipo: 'constancia', origen: 'tecnológico'}),
+            { tipo: 'constancia', origen: 'tecnológico'}),
 
-      // DOC017: Comisión por instructor de cursos TecNM
-      'DOC017': () =>
+        // DOC017: Comisión por instructor de cursos TecNM
+        'DOC017': () =>
         this.generateCursosImpartidos(base, claveDocente, claveDepartamento, año,
-          { tipo: 'comision', origen: 'tecnm'}),
+            { tipo: 'comision', origen: 'tecnm'}),
 
-      // DOC018: Constancia por instructor de cursos TecNM
-      'DOC018': () =>
+        // DOC018: Constancia por instructor de cursos TecNM
+        'DOC018': () =>
         this.generateCursosImpartidos(base, claveDocente, claveDepartamento, año,
-          { tipo: 'constancia', origen: 'tecnm'}),
+            { tipo: 'constancia', origen: 'tecnm'}),
 
-      // DOC019: Comisión por instructor de diplomados
-      'DOC019': () =>
+        // DOC019: Comisión por instructor de diplomados
+        'DOC019': () =>
         this.generateDiplomados(base, claveDocente, claveDepartamento, año, 'comision'),
 
-      // DOC020: Constancia por instructor de diplomados
-      'DOC020': () =>
+        // DOC020: Constancia por instructor de diplomados
+        'DOC020': () =>
         this.generateDiplomados(base, claveDocente, claveDepartamento, año, 'constancia'),
 
-      // DOC026: Comisión diplomados estrategicos
-      'DOC026': () =>
+        // DOC026: Comisión diplomados estrategicos
+        'DOC026': () =>
         this.generateDiplomadosEstrategicos(base, claveDocente, claveDepartamento, año, 'comision'),
 
-      // DOC027: Constancia diplomados estrategicos
-      'DOC027': () =>
+        // DOC027: Constancia diplomados estrategicos
+        'DOC027': () =>
         this.generateDiplomadosEstrategicos(base, claveDocente, claveDepartamento, año, 'constancia'),
 
-      // DOC028: Acta de examen de titulación
-      'DOC028': () =>
+        // DOC028: Acta de examen de titulación
+        'DOC028': () =>
         this.generateTitulaciones(base, claveDocente, claveDepartamento, año, 'acta'),
 
-      // DOC030: Constancia sinodal titulación
-      'DOC030': () =>
+        // DOC030: Constancia sinodal titulación
+        'DOC030': () =>
         this.generateTitulaciones(base, claveDocente, claveDepartamento, año, 'constancia'),
 
-      // DOC029: Convenio de colaboración
-      'DOC029': () =>
+        // DOC029: Convenio de colaboración
+        'DOC029': () =>
         this.generateConveniosAcademicos(base, claveDocente, claveDepartamento, año),
 
-      // DOC031: Programa de asesorías en ciencias básicas
-      'DOC031': () =>
+        // DOC031: Programa de asesorías en ciencias básicas
+        'DOC031': () =>
         this.generateAsesoriasCienciasBasicas(base, claveDocente, claveDepartamento, año),
 
-      // DOC032: Constancia de asesorías en ciencias básicas
-      'DOC032': () =>
+        // DOC032: Constancia de asesorías en ciencias básicas
+        'DOC032': () =>
         this.generateConstanciaAsesoriaCienciasBasicas(base, claveDocente, claveDepartamento, año),
 
         // DOC033: Comisión por asesoría en concursos
@@ -275,7 +283,7 @@ export class FilesService {
         'DOC053': () => 
         this.generateAperturaProgramas(base, claveDocente, claveDepartamento, año, 'autorizacion'),
         
-            // DOC054: Constancia de prestación de servicios docentes
+        // DOC054: Constancia de prestación de servicios docentes
         'DOC054': () => 
         this.generatePrestacionServicios(base, claveDocente, claveDepartamento),
         
@@ -342,47 +350,61 @@ export class FilesService {
         this.logger.log(`[GENERATE_EXPEDIENTE] ===== Procesando departamento ${departamentosProcesados}/${departamentos.length} =====`);
         
         try {
-        claveDepartamento = dep ?? (await this.getDepartmentByProfessorId(claveDocente));
-        this.logger.log(`[GENERATE_EXPEDIENTE] Clave departamento: ${claveDepartamento}`);
-        
-        this.logger.log(`[GENERATE_EXPEDIENTE] Llamando a getFilesByDepartment...`);
-        const result = await this.getFilesByDepartment(claveDocente, claveDepartamento, año, generation);
-        
-        if (result && result.length > 0) {
-            documentos.push(...result);
-            totalDocumentosGenerados += result.length;
-            this.logger.log(`[GENERATE_EXPEDIENTE] ✅ Generados ${result.length} documentos del departamento ${claveDepartamento}`);
+            claveDepartamento = dep ?? (await this.getDepartmentByProfessorId(claveDocente));
+            this.logger.log(`[GENERATE_EXPEDIENTE] Clave departamento: ${claveDepartamento}`);
             
-            // Log detallado de los documentos generados
-            for (let index = 0; index < result.length; index++) {
-            const doc = result[index];
-            let nombreDocumento = 'Sin nombre';
+            if (testMode) {
+                // MODO DE PRUEBA: No generar documentos, solo simular
+                this.logger.log(`[GENERATE_EXPEDIENTE] 🧪 Saltando generación real de documentos (modo prueba)`);
+                this.logger.log(`[GENERATE_EXPEDIENTE] ✅ Simulado procesamiento del departamento ${claveDepartamento}`);
+                continue; // Saltar a siguiente departamento sin generar
+            }
             
-            try {
-                // Intentar obtener el nombre del documento desde la BD
-                if (doc.claveDocumento) {
-                const nombre = await this.getDocumentNameById(doc.claveDocumento);
-                nombreDocumento = nombre || `${doc.claveDocumento} (sin nombre en BD)`;
+            // MODO NORMAL: Generar documentos reales
+            this.logger.log(`[GENERATE_EXPEDIENTE] Llamando a getFilesByDepartment...`);
+            const result = await this.getFilesByDepartment(claveDocente, claveDepartamento, año, generation);
+            
+            if (result && result.length > 0) {
+                documentos.push(...result);
+                totalDocumentosGenerados += result.length;
+                this.logger.log(`[GENERATE_EXPEDIENTE] ✅ Generados ${result.length} documentos del departamento ${claveDepartamento}`);
+                
+                // Log detallado de los documentos generados
+                for (let index = 0; index < result.length; index++) {
+                    const doc = result[index];
+                    let nombreDocumento = 'Sin nombre';
+                    
+                    try {
+                        // Intentar obtener el nombre del documento desde la BD
+                        if (doc.claveDocumento) {
+                        const nombre = await this.getDocumentNameById(doc.claveDocumento);
+                        nombreDocumento = nombre || `${doc.claveDocumento} (sin nombre en BD)`;
+                        }
+                    } catch (error) {
+                        this.logger.warn(`[GENERATE_EXPEDIENTE] No se pudo obtener nombre para documento ${doc.claveDocumento}`);
+                        nombreDocumento = doc.claveDocumento || 'Sin clave';
+                    }
+                    
+                    this.logger.log(`[GENERATE_EXPEDIENTE]   - Documento ${index + 1}: ${nombreDocumento}`);
                 }
-            } catch (error) {
-                this.logger.warn(`[GENERATE_EXPEDIENTE] No se pudo obtener nombre para documento ${doc.claveDocumento}`);
-                nombreDocumento = doc.claveDocumento || 'Sin clave';
+            } else {
+                this.logger.warn(`[GENERATE_EXPEDIENTE] ⚠️ No se generaron documentos para el departamento ${claveDepartamento}`);
             }
-            
-            this.logger.log(`[GENERATE_EXPEDIENTE]   - Documento ${index + 1}: ${nombreDocumento}'}`);
-            }
-        } else {
-            this.logger.warn(`[GENERATE_EXPEDIENTE] ⚠️ No se generaron documentos para el departamento ${claveDepartamento}`);
-        }
         } catch (error) {
-        this.logger.error(`[GENERATE_EXPEDIENTE] ❌ Error procesando departamento ${dep}:`, error);
-        this.logger.error(`[GENERATE_EXPEDIENTE] Stack trace:`, error.stack);
+            this.logger.error(`[GENERATE_EXPEDIENTE] ❌ Error procesando departamento ${dep}:`, error);
+            this.logger.error(`[GENERATE_EXPEDIENTE] Stack trace:`, error.stack);
         }
     }
     
     this.logger.log(`[GENERATE_EXPEDIENTE] ===== RESUMEN DE GENERACIÓN =====`);
     this.logger.log(`[GENERATE_EXPEDIENTE] Departamentos procesados: ${departamentosProcesados}`);
-    this.logger.log(`[GENERATE_EXPEDIENTE] Total de documentos generados: ${totalDocumentosGenerados}`);
+    
+    if (testMode) {
+        this.logger.log(`[GENERATE_EXPEDIENTE] 🧪 MODO PRUEBA: 0 documentos generados (esperado)`);
+    } else {
+        this.logger.log(`[GENERATE_EXPEDIENTE] Total de documentos generados: ${totalDocumentosGenerados}`);
+    }
+    
     this.logger.log(`[GENERATE_EXPEDIENTE] Documentos en array final: ${documentos.length}`);
     
     // Crear objeto expediente
@@ -410,25 +432,30 @@ export class FilesService {
         throw error;
     }
     
-    // Insertar documentos generados
+    // Insertar documentos generados (si hay)
     if (documentos.length > 0) {
         try {
-        this.logger.log(`[GENERATE_EXPEDIENTE] Insertando ${documentos.length} documentos en base de datos...`);
-        await this.insertGeneratedDocuments(documentos, claveExpediente);
+            this.logger.log(`[GENERATE_EXPEDIENTE] Insertando ${documentos.length} documentos en base de datos...`);
+            await this.insertGeneratedDocuments(documentos, claveExpediente);
         this.logger.log(`[GENERATE_EXPEDIENTE] ✅ Documentos insertados exitosamente`);
         } catch (error) {
-        this.logger.error(`[GENERATE_EXPEDIENTE] ❌ Error al insertar documentos:`, error);
-        throw error;
+            this.logger.error(`[GENERATE_EXPEDIENTE] ❌ Error al insertar documentos:`, error);
+            throw error;
         }
     } else {
-        this.logger.warn(`[GENERATE_EXPEDIENTE] ⚠️ No hay documentos para insertar`);
+        if (testMode) {
+            this.logger.log(`[GENERATE_EXPEDIENTE] 🧪 MODO PRUEBA: No hay documentos para insertar (esperado)`);
+        } else {
+            this.logger.warn(`[GENERATE_EXPEDIENTE] ⚠️ No hay documentos para insertar`);
+        }
     }
     
     this.logger.log(`[GENERATE_EXPEDIENTE] ====== GENERACIÓN DE EXPEDIENTE COMPLETADA ======`);
     this.logger.log(`[GENERATE_EXPEDIENTE] Resultado final:`, {
+        modoPrueba: testMode,
         claveExpediente: expediente.claveExpediente,
         documentosGenerados: expediente.documentos.length,
-        exitoso: expediente.documentos.length > 0
+        exitoso: testMode ? true : expediente.documentos.length > 0
     });
     
     return expediente;
@@ -579,6 +606,154 @@ export class FilesService {
         
     } catch (error) {
         this.logger.error(`Error al obtener expedientes para usuario ${claveUsuario}:`, error);
+        throw error;
+    }
+  }
+
+  /**
+ * Obtener documentos generados de un expediente
+ * @param claveExpediente string
+ * @returns Array de documentos generados con información completa
+ */
+  async getDocumentosByExpediente(claveExpediente: string) {
+    try {
+        this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE] ====== INICIANDO BÚSQUEDA ======`);
+        this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE] ClaveExpediente: ${claveExpediente}`);
+
+        const pool = this.mssql.getPool();
+        
+        // Primero verificar que el expediente existe
+        const expedienteCheck = await pool
+        .request()
+        .input('ClaveExpediente', claveExpediente)
+        .query(`
+            SELECT 
+            e.ClaveExpediente,
+            e.AñoGeneracion,
+            e.ClaveDocente,
+            d.Nombre + ' ' + d.ApellidoPaterno + ' ' + d.ApellidoMaterno AS NombreDocente
+            FROM Expediente e
+            INNER JOIN Docente d ON e.ClaveDocente = d.ClaveDocente
+            WHERE e.ClaveExpediente = @ClaveExpediente
+        `);
+
+        if (!expedienteCheck.recordset[0]) {
+        this.logger.warn(`[GET_DOCUMENTOS_EXPEDIENTE] ⚠️ Expediente no encontrado: ${claveExpediente}`);
+        throw new NotFoundException(`Expediente con clave ${claveExpediente} no encontrado`);
+        }
+
+        const expediente = expedienteCheck.recordset[0];
+        this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE] Expediente encontrado:`);
+        this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE]   - Año: ${expediente.AñoGeneracion}`);
+        this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE]   - Docente: ${expediente.NombreDocente}`);
+
+        // Obtener documentos generados
+        this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE] Obteniendo documentos generados...`);
+        
+        const result = await pool
+        .request()
+        .input('ClaveExpediente', claveExpediente)
+        .query(`
+            SELECT 
+                dg.ClaveDocumentoGenerado,
+                dg.ClaveDocumento,
+                dg.ClaveExpediente,
+                dg.Contenido,
+                doc.Nombre AS NombreDocumento,
+
+                a.ClaveActividad,
+                a.Nombre AS NombreActividad,
+
+                dep.ClaveDepartamento,
+                dep.Nombre AS NombreDepartamento
+            FROM DocumentoGenerado dg
+            JOIN Documento doc 
+                ON dg.ClaveDocumento = doc.ClaveDocumento
+
+            OUTER APPLY (
+                SELECT TOP 1 ad.ClaveActividad, ad.ClaveDepartamento
+                FROM Actividad_Documento ad
+                WHERE ad.ClaveDocumento = doc.ClaveDocumento
+            ) ad
+
+            LEFT JOIN Actividad a 
+                ON ad.ClaveActividad = a.ClaveActividad
+
+            LEFT JOIN Departamento dep
+                ON ad.ClaveDepartamento = dep.ClaveDepartamento
+
+            WHERE dg.ClaveExpediente = @ClaveExpediente
+            ORDER BY doc.Nombre;
+        `);
+
+        this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE] Documentos encontrados: ${result.recordset.length}`);
+
+        if (result.recordset.length === 0) {
+        this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE] ⚠️ No hay documentos generados en este expediente`);
+        return [];
+        }
+
+        // Procesar documentos y parsear contenido JSON
+        const documentos = result.recordset.map((doc, index) => {
+        let contenidoParsed: any;
+        
+        // Parsear contenido JSON si existe
+        if (doc.Contenido) {
+            try {
+            contenidoParsed = JSON.parse(doc.Contenido);
+            this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE] Documento ${index + 1}: ${doc.NombreDocumento}`);
+            this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE]   - Clave: ${doc.ClaveDocumentoGenerado}`);
+            this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE]   - Departamento: ${doc.NombreDepartamento || 'N/A'}`);
+            this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE]   - Actividad: ${doc.NombreActividad || 'N/A'}`);
+            this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE]   - Contenido JSON: Parseado exitosamente`);
+            } catch (error) {
+            this.logger.error(`[GET_DOCUMENTOS_EXPEDIENTE] ❌ Error parseando JSON del documento ${doc.ClaveDocumentoGenerado}`);
+            this.logger.error(`[GET_DOCUMENTOS_EXPEDIENTE] Error: ${error.message}`);
+            contenidoParsed = { error: 'Error al parsear contenido JSON' };
+            }
+        } else {
+            this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE] Documento ${index + 1}: ${doc.NombreDocumento}`);
+            this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE]   - Sin contenido JSON`);
+        }
+
+        return {
+            claveDocumentoGenerado: doc.ClaveDocumentoGenerado,
+            claveDocumento: doc.ClaveDocumento,
+            claveExpediente: doc.ClaveExpediente,
+            nombreDocumento: doc.NombreDocumento,
+            contenido: contenidoParsed,
+            contenidoRaw: doc.Contenido,
+            actividad: doc.ClaveActividad ? {
+            claveActividad: doc.ClaveActividad,
+            nombre: doc.NombreActividad,
+            } : null,
+            departamento: doc.ClaveDepartamento ? {
+            claveDepartamento: doc.ClaveDepartamento,
+            nombre: doc.NombreDepartamento
+            } : null
+        };
+        });
+
+        this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE] ====== BÚSQUEDA COMPLETADA ======`);
+        this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE] Total documentos procesados: ${documentos.length}`);
+        
+        // Estadísticas
+        const conContenido = documentos.filter(d => d.contenido !== null).length;
+        const sinContenido = documentos.length - conContenido;
+        const conActividad = documentos.filter(d => d.actividad !== null).length;
+        
+        this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE] Estadísticas:`);
+        this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE]   - Con contenido JSON: ${conContenido}`);
+        this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE]   - Sin contenido JSON: ${sinContenido}`);
+        this.logger.log(`[GET_DOCUMENTOS_EXPEDIENTE]   - Con actividad asociada: ${conActividad}`);
+
+        return documentos;
+
+    } catch (error) {
+        this.logger.error(`[GET_DOCUMENTOS_EXPEDIENTE] ❌ ERROR al obtener documentos`);
+        this.logger.error(`[GET_DOCUMENTOS_EXPEDIENTE] ClaveExpediente: ${claveExpediente}`);
+        this.logger.error(`[GET_DOCUMENTOS_EXPEDIENTE] Error: ${error.message}`);
+        this.logger.error(`[GET_DOCUMENTOS_EXPEDIENTE] Stack trace:`, error.stack);
         throw error;
     }
   }
@@ -870,6 +1045,26 @@ export class FilesService {
       `);
 
     return result.recordset[0]?.claveDepartamento || null;
+  }
+
+  /**
+     * Obtener clave de departamento por ID de documento
+     * @param claveDocumento: string
+     */
+  async getDepartmentByDocumentId(claveDocumento: string) {
+    const pool = this.mssql.getPool();
+
+    const result = await pool
+        .request()
+        .input('ClaveDocumento', claveDocumento)
+        .query(`
+        SELECT TOP 1 ClaveDepartamento
+        FROM SAPEDD.dbo.Actividad_Documento
+        WHERE ClaveDocumento = @ClaveDocumento
+            AND ClaveDepartamento IS NOT NULL
+        `);
+
+    return result.recordset[0]?.ClaveDepartamento || null;
   }
 
   /**

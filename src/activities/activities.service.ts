@@ -39,19 +39,29 @@ export class ActivitiesService {
         return result.recordset?.[0].nombreActividad || null;
     }
 
-    async getDocumentsByActivity(claveActividad: string)  {
+    async getDocumentsByActivity(claveActividad: string) {
         const pool = this.mssql.getPool();
         const result = await pool
             .request()
             .input('ClaveActividad', claveActividad)
-            .query(`SELECT DISTINCT
-                        ClaveDocumento,
-                        ClaveDepartamento 
-                    FROM Actividad_Documento WHERE ClaveActividad = @ClaveActividad`);  
-            
+            .query(`
+                SELECT DISTINCT
+                    ad.ClaveDocumento,
+                    ad.ClaveDepartamento,
+                    d.Nombre,
+                    d.Tipo
+                FROM SAPEDD.dbo.Actividad_Documento ad
+                INNER JOIN SAPEDD.dbo.Documento d
+                    ON ad.ClaveDocumento = d.ClaveDocumento
+                WHERE ad.ClaveActividad = @ClaveActividad
+            `);
+
         return result.recordset.map(row => ({
-            documento: row.ClaveDocumento,
-            departamento: row.ClaveDepartamento
+            claveDocumento: row.ClaveDocumento,
+            departamento: row.ClaveDepartamento,
+            nombre: row.Nombre,
+            tipo: row.Tipo,
         }));
     }
+
 }

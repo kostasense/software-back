@@ -27,7 +27,7 @@ export class TicketsController {
     @Body() createTicketDto: {
       motivo: string;
       claveDocumento: string;
-      claveUsuario: string; // Usuario que crea el ticket
+      claveUsuario: string;
     }
   ) {
     this.logger.log('Creando nuevo ticket');

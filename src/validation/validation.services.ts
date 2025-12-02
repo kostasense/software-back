@@ -206,7 +206,7 @@ export class ValidationServices {
             WHERE pi.ClaveDocente = @ClaveDocente
                 AND Año = @Año`,
             [{ name: 'ClaveDocente', value: claveDocente },
-             { name: 'Año', value: año }]
+             { name: 'Año', value: año + 1 }]
         )
 
         return ([

@@ -1,7 +1,37 @@
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ExecutionContext, UnauthorizedException, HttpException, HttpStatus } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+
+class TokenExpiredException extends HttpException {
+  constructor() {
+    super(
+      {
+        success: false,
+        statusCode: 401,
+        message: 'Access token expired',
+        error: 'TOKEN_EXPIRED',
+        requiresRefresh: true,
+      },
+      HttpStatus.UNAUTHORIZED,
+    );
+  }
+}
+
+class InvalidTokenException extends HttpException {
+  constructor() {
+    super(
+      {
+        success: false,
+        statusCode: 401,
+        message: 'Invalid or missing token',
+        error: 'UNAUTHORIZED',
+        requiresLogin: true,
+      },
+      HttpStatus.UNAUTHORIZED,
+    );
+  }
+}
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -23,28 +53,12 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   handleRequest(err, user, info, context: ExecutionContext) {
-    const response = context.switchToHttp().getResponse();
-    
     if (err || !user) {
       if (info?.name === 'TokenExpiredError') {
-        response.status(401).json({
-          success: false,
-          statusCode: 401,
-          message: 'Access token expired',
-          error: 'TOKEN_EXPIRED',
-          requiresRefresh: true,
-        });
-        return null;
+        throw new TokenExpiredException();
       }
-      
-      response.status(401).json({
-        success: false,
-        statusCode: 401,
-        message: 'Invalid or missing token',
-        error: 'UNAUTHORIZED',
-        requiresLogin: true,
-      });
-      return null;
+
+      throw new InvalidTokenException();
     }
     
     return user;

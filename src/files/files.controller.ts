@@ -120,4 +120,30 @@ export class FilesController {
       throw error;
     }
   }
+
+  /**
+     * Obtener documentos generados de un expediente
+     * GET /files/expedientes/:claveExpediente/documentos
+     */
+  @Get('expedientes/:claveExpediente/documentos')
+  @HttpCode(HttpStatus.OK)
+  async getDocumentosByExpediente(
+    @Param('claveExpediente') claveExpediente: string
+  ) {
+    this.logger.log(`Obteniendo documentos del expediente: ${claveExpediente}`);
+    try {
+        const documentos = await this.filesService.getDocumentosByExpediente(claveExpediente);
+        
+        return {
+        success: true,
+        statusCode: HttpStatus.OK,
+        message: 'Documentos obtenidos exitosamente',
+        data: documentos,
+        total: documentos.length
+        };
+    } catch (error) {
+        this.logger.error(`Error al obtener documentos del expediente: ${error.message}`, error.stack);
+        throw error;
+    }
+  }
 }
